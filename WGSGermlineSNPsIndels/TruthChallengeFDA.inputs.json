@@ -1,0 +1,116 @@
+{
+   "##_1": "REFERENCIA",
+   "WholeGenomeSequencingGATK4WF.refFasta":    "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta",
+   "WholeGenomeSequencingGATK4WF.refBaseDir":  "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/",
+   "WholeGenomeSequencingGATK4WF.refBaseName": "human_g1k_v37",
+
+   "WholeGenomeSequencingGATK4WF.refAlt_NOT_IN_GRCh37": "",
+   "WholeGenomeSequencingGATK4WF.refIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.fai",
+   "WholeGenomeSequencingGATK4WF.refDict":  "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.dict",
+   "WholeGenomeSequencingGATK4WF.refAmb":   "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.amb",
+   "WholeGenomeSequencingGATK4WF.refAnn":   "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.ann",
+   "WholeGenomeSequencingGATK4WF.refBwt":   "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.bwt",
+   "WholeGenomeSequencingGATK4WF.refPac":   "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.pac",
+   "WholeGenomeSequencingGATK4WF.refSa":    "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta.sa",
+
+   "WholeGenomeSequencingGATK4WF.dbSnpsVcf":    "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/dbsnp_138.b37.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.dbSnpsVcfIdx": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/dbsnp_138.b37.vcf.gz.tbi",
+
+   "WholeGenomeSequencingGATK4WF.hapMapResourceVcf":      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/hapmap_3.3.b37.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.hapMapResourceVcfIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/hapmap_3.3.b37.vcf.gz.tbi",
+
+   "WholeGenomeSequencingGATK4WF.omniResourceVcf":      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_omni2.5.b37.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.omniResourceVcfIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_omni2.5.b37.vcf.gz.tbi",
+
+   "WholeGenomeSequencingGATK4WF.oneThousandGenomesResourceVcf":      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_phase1.snps.high_confidence.b37.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.oneThousandGenomesResourceVcfIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_phase1.snps.high_confidence.b37.vcf.gz.tbi",
+
+   "WholeGenomeSequencingGATK4WF.millsResourceVcf":      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.millsResourceVcfIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz.tbi",
+
+   "WholeGenomeSequencingGATK4WF.axiomPolyResourceVcf":      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz",
+   "WholeGenomeSequencingGATK4WF.axiomPolyResourceVcfIndex": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz.tbi",
+
+   "##CAMBIAR VALOR DE LAS 2 SIGUIENTES - NO SE ESTÁN USANDO": "wgsCoverageIntervalList y wgsEvaluationIntervalList",
+   "WholeGenomeSequencingGATK4WF.wgsCoverageIntervalList":   "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta",
+   "WholeGenomeSequencingGATK4WF.wgsEvaluationIntervalList": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.fasta",
+
+   "WholeGenomeSequencingGATK4WF.knownIndelsSitesVcfs": [
+      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz", 
+      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_phase1.indels.b37.vcf.gz"
+   ],
+   "WholeGenomeSequencingGATK4WF.knownIndelsSitesIndices": [
+      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz.tbi",
+      "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/1000G_phase1.indels.b37.vcf.gz.tbi"
+   ],
+
+   "##_HG38_INTERVAL_LIST": "intervalList(NOT IN USE), scatterCount, breakBandsAtMultiplesOf, intervalListOutDir, useGenomicsDB",
+   "WholeGenomeSequencingGATK4WF.intervalList": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/GRCh37/human_g1k_v37.dict",
+   "WholeGenomeSequencingGATK4WF.scatterCount": 5,
+   "WholeGenomeSequencingGATK4WF.breakBandsAtMultiplesOf": 1000000,
+   "WholeGenomeSequencingGATK4WF.intervalListOutDir": "intervalsDirectory",
+   "WholeGenomeSequencingGATK4WF.useGenomicsDB": false,
+
+   "##_VQSR_PARAMS": "tranches, annotations, filter levels...",
+   "WholeGenomeSequencingGATK4WF.snpRecalibrationTrancheValues": ["100.0", "99.95", "99.9", "99.8", "99.6", "99.5", "99.4", "99.3", "99.0", "98.0", "97.0", "90.0"],
+   "WholeGenomeSequencingGATK4WF.snpRecalibrationAnnotationValues": ["QD", "MQRankSum", "ReadPosRankSum", "FS", "MQ", "SOR", "DP"],
+   "WholeGenomeSequencingGATK4WF.indelRecalibrationTrancheValues": ["100.0", "99.95", "99.9", "99.5", "99.0", "97.0", "96.0", "95.0", "94.0", "93.5", "93.0", "92.0", "91.0", "90.0"],
+   "WholeGenomeSequencingGATK4WF.indelRecalibrationAnnotationValues": ["QD", "MQRankSum", "ReadPosRankSum", "FS", "SOR", "DP"],
+   "WholeGenomeSequencingGATK4WF.snpFilterLevel": 99.7,
+   "WholeGenomeSequencingGATK4WF.indelFilterLevel": 99.7,
+   "WholeGenomeSequencingGATK4WF.snpVQSRDownsampleFactor": 10,
+   "WholeGenomeSequencingGATK4WF.indelsMaxGaussians": 2,
+   "WholeGenomeSequencingGATK4WF.snpsMaxGaussians": 4,
+
+   "##_2": "READS",
+   "WholeGenomeSequencingGATK4WF.fastqReadsTSV": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/HG001_read_pairs.tsv",
+   "WholeGenomeSequencingGATK4WF.libraryName": "LIB-01_unknown",
+   "WholeGenomeSequencingGATK4WF.platform": "illumina",
+   "WholeGenomeSequencingGATK4WF.sequencingCenter": "FDA-TruthChallenge",
+
+   "##_3": "BWA",
+   "WholeGenomeSequencingGATK4WF.bwaPath": "bwa",
+   "WholeGenomeSequencingGATK4WF.bwaMemCommand_pairedSplit": "mem -K 100000000 -v 3 -t 2 -Y $bashRefFasta $bashReadFastq1 $bashReadFastq2",
+   "WholeGenomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 16 -Y $bashRefFasta $bashReadFastq",   
+
+   "##_4": "SAMTOOLS",
+   "WholeGenomeSequencingGATK4WF.samtoolsPath": "samtools",
+
+   "##_5": "GATK",
+   "WholeGenomeSequencingGATK4WF.gatkPath": "gatk",
+
+   "##_6": "PICARD",
+   "WholeGenomeSequencingGATK4WF.picardPath": "$PICARD",
+
+   "##_7": "PYTHON",
+   "WholeGenomeSequencingGATK4WF.pythonPath": "python",
+   "WholeGenomeSequencingGATK4WF.TSVIntervalsFile_GENERATE_NEW_FILE": "",
+   "WholeGenomeSequencingGATK4WF.protectionTag": "''",
+
+   "##_8": "QUALIMAP",
+   "WholeGenomeSequencingGATK4WF.qualimapPath": "qualimap",
+
+   "##_9": "RESULTS DIR",
+   "WholeGenomeSequencingGATK4WF.resultsDir": "/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/data/results/HG001",
+
+   "##_10": "CONFIGURATION PARAMETERS",
+   "WholeGenomeSequencingGATK4WF.wfPerSamplePerLane": true,
+   "WholeGenomeSequencingGATK4WF.wfPreprocess": true,
+   "WholeGenomeSequencingGATK4WF.wfQC_PerSamplePerLane": true,
+
+   "WholeGenomeSequencingGATK4WF.wfPerSample": true,
+   "WholeGenomeSequencingGATK4WF.wfVariantCalling": true,
+   "WholeGenomeSequencingGATK4WF.wfBQSR": true,
+   "WholeGenomeSequencingGATK4WF.wfQC_PerSample": true,
+
+   "WholeGenomeSequencingGATK4WF.wfMultiSample": true,
+   "WholeGenomeSequencingGATK4WF.wfJointGenotyping": true,
+   "WholeGenomeSequencingGATK4WF.wfVQSR": true,
+   "WholeGenomeSequencingGATK4WF.wfQC_MultiSample": true,
+
+   "WholeGenomeSequencingGATK4WF.firstStep": 0,
+   "WholeGenomeSequencingGATK4WF.lastStep": 100,
+
+   "##_11": "Java Opts: Select Xms16g for 30GB-RAM and 60GB-RAM nodes. Select Xmx28g for 30GB-RAM or Xmx56 for 60GB-RAM nodes",
+   "WholeGenomeSequencingGATK4WF.javaOpts": "-Xms16g -Xmx56g"
+}
