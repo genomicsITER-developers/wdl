@@ -1,5 +1,11 @@
-Workflow:
----------
+Table of Contents
+=================
+
+* [Workflow](#workflow)
+* [Features](#features)
+
+## Workflow:
+------------
 
 ### A. Per sample, per lane
 
@@ -27,11 +33,11 @@ Workflow:
 #### 1. Variant Calling (per sample)
     1. MarkDuplicates (MergeBamsPerSample)............(step 16)
     2. BQSR
-        1. BaseRecalibrator (por intervalos)\*........(step 21)
+        1. BaseRecalibrator (por intervalos)*........(step 21)
         2. GatherBQSRReports..........................(step 22)
-        3. ApplyBQSR (por intervalos)\*...............(step 23)
+        3. ApplyBQSR (por intervalos)*...............(step 23)
         4. GatherBamFiles.............................(step 24)
-    3. HaplotypeCaller (por intervalos)\*.............(step 25)
+    3. HaplotypeCaller (por intervalos)*.............(step 25)
     4. MergeVcfs......................................(step 26)
  
 #### 2. Quality Control (Con la salida del MergeBamsPerSample)
@@ -43,22 +49,24 @@ Workflow:
 ### C. Multi-sample
  
 #### 1. Joing Genotyping (multi-sample)
-    1. GenomicsDBImport (por intervalos)\*............(step 21)
-    2. GenotypeGVCFs (por intervalos)\*...............(step 22)
-    3. VariantFiltration (por intervalos)\*...........(step 23)
-    4. MakeSitesOnlyVcf (por intervalos)\*............(step 23)
+    1. GenomicsDBImport (por intervalos)*............(step 21)
+    2. GenotypeGVCFs (por intervalos)*...............(step 22)
+    3. VariantFiltration (por intervalos)*...........(step 23)
+    4. MakeSitesOnlyVcf (por intervalos)*............(step 23)
     5. GatherVcfsCloud................................(step 24)
     6. VQSR
         1. SNPs
             1. VariantRecalibratorCreateModel.........(step 25)
         2. Indels
             1. VariantRecalibrator....................(step 28)
-        3. ApplyRecalibration (por intervalos)\*......(step 29)
+        3. ApplyRecalibration (por intervalos)*......(step 29)
         4. CollectVariantCallingMetrics...............(step 30)
 
 ---
 
-Features:
+## Features:
+------------
+
 - Possibility to run on a HPC infrastructure connecting the Cromwell engine and the SLURM scheduler.
 - Starts from BCL data.
 - Demultiplexing of samples pooled across the flowcell.
