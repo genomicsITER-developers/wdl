@@ -2,6 +2,8 @@
 
 * [Prerequisites](#prerequisites) :warning:
 * [Usage](#usage) :warning:
+    * [Local](#local)
+    * [HPC using Slurm scheduler](#hpc-using-slurm-scheduler)
 * [Workflow](#workflow)
 * [Features](#features)
 * [WDL Scripts](#wdl-scripts) :warning:
@@ -25,6 +27,14 @@ TODO :warning:
 ---
 
 ## Usage:
+
+### Local
+
+...
+
+### HPC using Slurm scheduler
+
+...
 
 TODO :warning:
 
