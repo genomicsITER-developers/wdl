@@ -4,12 +4,19 @@ Workflow:
 ### A. Per sample, per lane
 
 1. Preprocessing
+
 ··1.1 FastqToSam....................................(step 1)
+
 ··1.2 SamToFastq....................................(step 2)
+
 ··1.3 Bwa Mem.......................................(step 3)
+
 ··1.4 MergeBamAlignments............................(step 4)
+
 ··1.5 MarkDuplicates................................(step 5)
+
 ··1.6 SortSam.......................................(step 6)
+
 ··1.7 SetNmMdAndUqTags..............................(step 7)
 
 
