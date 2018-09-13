@@ -12,6 +12,17 @@
 
 TODO :warning:
 
+Basic software needed to run the pipeline:
+
+* [GATK]()
+* [Cromwell]()
+* [BWA]()
+* [Samtools]()
+* [Picard]()
+* [Python]()
+* [Qualimap]()
+
+
 ---
 
 ## Usage:
