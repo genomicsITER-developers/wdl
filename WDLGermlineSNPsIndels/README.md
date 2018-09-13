@@ -14,7 +14,7 @@ TODO :warning:
 
 Basic software needed to run the pipeline:
 
-* [GATK]()
+* [GATK]() (<= 4.0.0.0)
 * [Cromwell]()
 * [BWA]()
 * [Samtools]()
