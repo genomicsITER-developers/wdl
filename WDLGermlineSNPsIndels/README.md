@@ -1,11 +1,9 @@
-Table of Contents
-=================
+## Table of Contents
 
 * [Workflow](#workflow)
 * [Features](#features)
 
 ## Workflow:
-------------
 
 ### A. Per sample, per lane
 
@@ -65,7 +63,6 @@ Table of Contents
 ---
 
 ## Features:
-------------
 
 - Possibility to run on a HPC infrastructure connecting the Cromwell engine and the SLURM scheduler.
 - Starts from BCL data.
@@ -75,3 +72,5 @@ Table of Contents
 - Programmed to restart from every step in case of fail.
 
 For benchmarking, we are following the guidelines of the Truth and Consistency precisionFDA challenges using Genome In A Bottle Consortium released genomes data
+
+---
