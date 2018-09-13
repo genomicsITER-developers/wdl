@@ -10,18 +10,17 @@
 
 ## Prerequisites:
 
-TODO :warning:
-
 Basic software needed to run the pipeline:
 
-* [GATK]() (<= 4.0.0.0)
-* [Cromwell]()
-* [BWA]()
-* [Samtools]()
-* [Picard]()
-* [Python]()
-* [Qualimap]()
+* [GATK](https://software.broadinstitute.org/gatk/) (<= 4.0.0.0)
+* [Cromwell](https://cromwell.readthedocs.io/en/stable/)
+* [BWA](http://bio-bwa.sourceforge.net/)
+* [Samtools, HTSlib](http://www.htslib.org/)
+* [Picard](https://broadinstitute.github.io/picard/)
+* [Python](https://www.python.org/)
+* [Qualimap](http://qualimap.bioinfo.cipf.es/)
 
+TODO :warning:
 
 ---
 
