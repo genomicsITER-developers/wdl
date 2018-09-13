@@ -3,7 +3,7 @@ Workflow:
 
 ### A. Per sample, per lane
 
-1. Preprocessing
+#### 1. Preprocessing
     1. FastqToSam....................................(step 1)
     2. SamToFastq....................................(step 2)
     3. Bwa Mem.......................................(step 3)
@@ -12,7 +12,7 @@ Workflow:
     6. SortSam.......................................(step 6)
     7. SetNmMdAndUqTags..............................(step 7)
 
-2. Quality Control (per sample, per lane)
+#### 2. Quality Control (per sample, per lane)
     1. ValidateSam...................................(step 8)
     2. Qualimap......................................(step 9)
     3. CollectRawWgsMetrics (3-0)....................(step 10)
@@ -24,7 +24,7 @@ Workflow:
  
 ### B. Per sample
    
-1. Variant Calling (per sample)
+#### 1. Variant Calling (per sample)
     1. MarkDuplicates (MergeBamsPerSample)............(step 16)
     2. BQSR
         1. BaseRecalibrator (por intervalos)\*........(step 21)
@@ -34,7 +34,7 @@ Workflow:
     3. HaplotypeCaller (por intervalos)\*.............(step 25)
     4. MergeVcfs......................................(step 26)
  
-2. Quality Control (Con la salida del MergeBamsPerSample)
+#### 2. Quality Control (Con la salida del MergeBamsPerSample)
     1. ValidateSam....................................(step 17)
     2. ¿DepthOfCoverage?..............................(step 18)
     3. CollectMultipleMetrics.........................(step 19)
@@ -42,7 +42,7 @@ Workflow:
  
 ### C. Multi-sample
  
-1. Joing Genotyping (multi-sample)
+#### 1. Joing Genotyping (multi-sample)
     1. GenomicsDBImport (por intervalos)\*............(step 21)
     2. GenotypeGVCFs (por intervalos)\*...............(step 22)
     3. VariantFiltration (por intervalos)\*...........(step 23)
