@@ -21,9 +21,9 @@ TODO :warning:
 
 ## Workflow:
 
-### A. Per sample, per lane
+### [A. Per sample, per lane](#a-per-sample-per-lane)
 
-#### 1. Preprocessing
+#### [1. Preprocessing](#1-preprocessing)
     1. FastqToSam....................................(step 1)
     2. SamToFastq....................................(step 2)
     3. Bwa Mem.......................................(step 3)
@@ -42,7 +42,7 @@ TODO :warning:
     7. CollectMultipleMetrics........................(step 14)
     8. ¿CallableLoci?................................(step 15)
  
-### B. Per sample
+### [B. Per sample](#b-per-sample)
    
 #### 1. Variant Calling (per sample)
     1. MarkDuplicates (MergeBamsPerSample)............(step 16)
@@ -60,7 +60,7 @@ TODO :warning:
     3. CollectMultipleMetrics.........................(step 19)
     4. ¿CallableLoci?.................................(step 20)
  
-### C. Multi-sample
+### [C. Multi-sample](#c-multi-sample)
  
 #### 1. Joing Genotyping (multi-sample)
     1. GenomicsDBImport (por intervalos)*.............(step 21)
@@ -75,6 +75,22 @@ TODO :warning:
             1. VariantRecalibrator....................(step 28)
         3. ApplyRecalibration (por intervalos)*... ...(step 29)
         4. CollectVariantCallingMetrics...............(step 30)
+
+---
+
+### A. Per sample, per lane
+
+TODO :warning:
+
+#### 1. Preprocessing
+
+### B. Per sample
+
+TODO :warning:
+
+### C. Multi-sample
+
+TODO :warning:
 
 ---
 
