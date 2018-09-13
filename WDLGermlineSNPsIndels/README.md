@@ -3,6 +3,8 @@
 * [Workflow](#workflow)
 * [Features](#features)
 
+---
+
 ## Workflow:
 
 ### A. Per sample, per lane
