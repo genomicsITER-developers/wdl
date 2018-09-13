@@ -19,8 +19,8 @@ module load samtools/1.7
 module load htslib/1.3.1
 module load java-jre/1.8.0_77 qualimap/2.2.1
 
-java -Dconfig.file=/lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/pipeline/backend-slurm.conf \
--jar /lustre/amunoz/tools/cromwell-30.2.jar \
-run /lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/pipeline/WholeGenomeSequencingGATK4.wdl \
--i /lustre/jlorsal/genomics/pipelines/wgs/gatk4/FDA-Challenge/pipeline/TruthChallengeFDA.inputs.json \
--m metadata.json
+java -Dconfig.file=../backend-slurm.conf \
+-jar .../cromwell-30.2.jar \
+run .../WholeGenomeSequencingGATK4.wdl \
+-i .../TruthChallengeFDA.inputs.json \
+-m .../metadata.json
