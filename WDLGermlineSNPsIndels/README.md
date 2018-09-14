@@ -10,7 +10,7 @@
 
 ---
 
-## Prerequisites:
+## Prerequisites: :warning:
 
 Basic software needed to run the pipeline:
 
@@ -22,11 +22,9 @@ Basic software needed to run the pipeline:
 * [Python](https://www.python.org/)
 * [Qualimap](http://qualimap.bioinfo.cipf.es/)
 
-TODO :warning:
-
 ---
 
-## Usage:
+## Usage: :warning:
 
 ### Local
 
@@ -123,8 +121,6 @@ To run the workflow in a system with Slurm scheduler (such as TeideHPC) using th
 screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 ```
 
-TODO :warning:
-
 ---
 
 ## Workflow:
@@ -189,27 +185,34 @@ TODO :warning:
 
 ---
 
-## WDL Scripts:
+## WDL Scripts: :warning:
 
-#### WholeGenomeSequencingGATK4.wdl
+##### WholeGenomeSequencingGATK4.wdl
+...
 
-#### SetWorkingDirectory.wdl
+##### SetWorkingDirectory.wdl
+...
 
-#### Preprocessing.wdl
+##### Preprocessing.wdl
+...
 
-#### QualityControl.wdl
+##### QualityControl.wdl
+...
 
-#### VariantCallingPerSample.wdl
+##### VariantCallingPerSample.wdl
+...
 
-#### BaseQualityScoreRecalibration.wdl
+##### BaseQualityScoreRecalibration.wdl
+...
 
-#### QualityControlPerSample.wdl
+##### QualityControlPerSample.wdl
+...
 
-#### JointGenotyping.wdl
+##### JointGenotyping.wdl
+...
 
-#### VariantQualityScoreRecalibration.wdl
-
-TODO :warning:
+##### VariantQualityScoreRecalibration.wdl
+...
 
 ---
 
