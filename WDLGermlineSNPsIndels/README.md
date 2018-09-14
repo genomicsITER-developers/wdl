@@ -53,6 +53,14 @@ backend {
 }
 ```
 
+```
+java -Dconfig.file=./backends/backend-local.conf \
+-jar .../cromwell-30.2.jar \
+run ./pipeline/WholeGenomeSequencingGATK4.wdl \
+-i ./inputs/WholeGenomeSequencingGATK4.inputs.json \
+-m metadata.json
+```
+
 ### HPC using Slurm scheduler
 
 ...
@@ -113,6 +121,9 @@ backend {
 }
 ```
 
+```
+screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
+```
 
 TODO :warning:
 
