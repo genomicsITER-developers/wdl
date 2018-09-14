@@ -53,12 +53,9 @@ backend {
 }
 ```
 
+To run the workflow in your system using this configuration file:
 ```
-java -Dconfig.file=./backends/backend-local.conf \
--jar .../cromwell-30.2.jar \
-run ./pipeline/WholeGenomeSequencingGATK4.wdl \
--i ./inputs/WholeGenomeSequencingGATK4.inputs.json \
--m metadata.json
+java -Dconfig.file=./backends/backend-local.conf -jar cromwell-30.2.jar run ./pipeline/WholeGenomeSequencingGATK4.wdl -i ./inputs/WholeGenomeSequencingGATK4.inputs.json -m metadata.json
 ```
 
 ### HPC using Slurm scheduler
@@ -121,6 +118,7 @@ backend {
 }
 ```
 
+To run the workflow in a system with Slurm scheduler (such as TeideHPC) using this configuration file:
 ```
 screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 ```
