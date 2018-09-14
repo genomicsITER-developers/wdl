@@ -191,6 +191,24 @@ TODO :warning:
 
 ## WDL Scripts:
 
+#### WholeGenomeSequencingGATK4.wdl
+
+#### SetWorkingDirectory.wdl
+
+#### Preprocessing.wdl
+
+#### QualityControl.wdl
+
+#### VariantCallingPerSample.wdl
+
+#### BaseQualityScoreRecalibration.wdl
+
+#### QualityControlPerSample.wdl
+
+#### JointGenotyping.wdl
+
+#### VariantQualityScoreRecalibration.wdl
+
 TODO :warning:
 
 ---
