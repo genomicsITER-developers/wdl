@@ -1,17 +1,17 @@
 ## Table of Contents
 
-* [Prerequisites](#prerequisites) :warning:
-* [Usage](#usage) :warning:
+* [Prerequisites](#prerequisites)
+* [Features](#features)
+* [Usage](#usage)
     * [Set input parameters](#set-input-parameters)
     * [Local](#local)
     * [HPC using Slurm scheduler](#hpc-using-slurm-scheduler)
 * [Workflow](#workflow)
-* [WDL Scripts](#wdl-scripts) :warning:
-* [Features](#features)
+* [WDL Scripts](#wdl-scripts)
 
 ---
 
-## Prerequisites: :warning:
+## Prerequisites
 
 Basic software needed to run the pipeline:
 
@@ -26,7 +26,20 @@ Basic software needed to run the pipeline:
 
 ---
 
-## Usage: :warning:
+## Features
+
+- Possibility to run on a HPC infrastructure connecting the Cromwell engine and the SLURM scheduler.
+- Starts from BCL data.
+- Demultiplexing of samples pooled across the flowcell.
+- Data processing both on a per-lane and a per-sample basis.
+- Possibility to handle hg19 and hg38 reference genomes.
+- Programmed to restart from every step in case of fail.
+
+For benchmarking, we are following the guidelines of the Truth and Consistency [precisionFDA challenges](https://precision.fda.gov/) using [Genome In A Bottle Consortium](http://jimb.stanford.edu/giab/) released genomes data.
+
+---
+
+## Usage
 
 ### Set input parameters
 
@@ -292,7 +305,9 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 
 ---
 
-## Workflow:
+## Workflow
+
+![](./images/wgs-gatk-pipeline.png)
 
 ### A. Per sample, per lane
 
@@ -320,11 +335,11 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 #### 1. Variant Calling
     1. MarkDuplicates (MergeBamsPerSample)............(step 16)
     2. BQSR
-        1. BaseRecalibrator (by intervals)*...........(step 17)
+        1. BaseRecalibrator (by intervals*)...........(step 17)
         2. GatherBQSRReports..........................(step 18)
-        3. ApplyBQSR (by intervals)*..................(step 19)
+        3. ApplyBQSR (by intervals*)..................(step 19)
         4. GatherBamFiles.............................(step 20)
-    3. HaplotypeCaller (by intervals)*................(step 21)
+    3. HaplotypeCaller (by intervals*)................(step 21)
     4. MergeVcfs......................................(step 22)
  
 #### 2. Quality Control (Using MarkDuplicates (MergeBamsPerSample) output file)
@@ -337,34 +352,31 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
  
 #### 1. Joing Genotyping
     if (useGenomicsDB == true)
-        1. GenomicsDBImport (by intervals)*...........(step 27)───┐
+        1. GenomicsDBImport (by intervals*)...........(step 27)───┐
     else                                                          |─ In the inputs JSON file, select if you are using GenomicsDB or not.
-        1. CombineGVCFs (by intervals)*...............(step 27)───┘
-    2. GenotypeGVCFs (by intervals)*..................(step 28)
-    3. VariantFiltration (by intervals)*..............(step 29)
-    4. MakeSitesOnlyVcf (by intervals)*...............(step 30)
+        1. CombineGVCFs (by intervals*)...............(step 27)───┘
+    2. GenotypeGVCFs (by intervals*)..................(step 28)
+    3. VariantFiltration (by intervals*)..............(step 29)
+    4. MakeSitesOnlyVcf (by intervals*)...............(step 30)
     5. GatherVcfsCloud................................(step 31)
     6. VQSR
         1. SNPs
             1. VariantRecalibratorCreateModel.........(step 32)
         2. Indels
             1. VariantRecalibrator....................(step 33)
-        3. ApplyRecalibration (by intervals)*.........(step 34)
+        3. ApplyRecalibration (by intervals*).........(step 34)
         4. CollectVariantCallingMetrics...............(step 35)
 
 
-**Intervals:**
-   * Los intervalos se pasan con la opción -L.
-   * Gracias a esto, podemos ejecutar en paralelo estas funciones con el Scatter
-   * Los intervalos para el BQSR se generan con el fichero refDict mediante la función CreateSequenceGroupingTSV
-   * En el wdl de gatk, los intervalos para el HaplotypeCaller se generan desde un fichero de entrada del bundle del hg38 (wgs_calling_regions.hg38.interval_list) mediante la función ScatterIntervalList. Y para la parte del multisample usan la función DynamicallyCombineIntervals, con el fichero de entrada del hg38 (hg38.even.handcurated.20k.intervals). Nosotros le estamos pasando directamente el fichero que se crea con la función CreateSequenceGroupingTSV.
-
-
-![](./images/wgs-gatk-pipeline.png)
+**\* Intervals:**
+   * The -L argument directs the GATK engine to restrict processing to specific genomic intervals.
+   * This argument allows the pipeline to run the Scatter-Gather functionality.
 
 ---
 
-## WDL Scripts: :warning:
+## WDL Scripts
+
+Hierarchy tree:
 
 ```
 WholeGenomeSequencingGATK4.wdl
@@ -393,18 +405,5 @@ WholeGenomeSequencingGATK4.wdl
          |
          └─── VariantQualityScoreRecalibration.wdl
 ```
-
----
-
-## Features:
-
-- Possibility to run on a HPC infrastructure connecting the Cromwell engine and the SLURM scheduler.
-- Starts from BCL data.
-- Demultiplexing of samples pooled across the flowcell.
-- Data processing both on a per-lane and a per-sample basis.
-- Possibility to handle hg19 and hg38 reference genomes.
-- Programmed to restart from every step in case of fail.
-
-For benchmarking, we are following the guidelines of the Truth and Consistency precisionFDA challenges using Genome In A Bottle Consortium released genomes data.
 
 ---
