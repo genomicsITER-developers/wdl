@@ -1,6 +1,6 @@
 {
    "##_1": "REFERENCE GENOME DATA",
-   "##_NOTE_1": "Set '...' to ¿?",
+   "##_NOTE_1": "Set '...' to your own path",
 
    "WholeGenomeSequencingGATK4WF.refBaseDir":  ".../hg38/",
    "WholeGenomeSequencingGATK4WF.refBaseName": "Homo_sapiens_assembly38",

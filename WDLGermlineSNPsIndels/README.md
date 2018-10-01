@@ -327,7 +327,7 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
     3. HaplotypeCaller (by intervals)*................(step 21)
     4. MergeVcfs......................................(step 22)
  
-#### 2. Quality Control (Con la salida del MergeBamsPerSample)
+#### 2. Quality Control (Using MarkDuplicates (MergeBamsPerSample) output file)
     1. ValidateSam....................................(step 23)
     2. ¿DepthOfCoverage?..............................(step 24)
     3. CollectMultipleMetrics.........................(step 25)
@@ -338,7 +338,7 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 #### 1. Joing Genotyping
     if (useGenomicsDB == true)
         1. GenomicsDBImport (by intervals)*...........(step 27)───┐
-    else                                                          |──── 
+    else                                                          |─ In the inputs JSON file, select if you are using GenomicsDB or not.
         1. CombineGVCFs (by intervals)*...............(step 27)───┘
     2. GenotypeGVCFs (by intervals)*..................(step 28)
     3. VariantFiltration (by intervals)*..............(step 29)
@@ -351,6 +351,16 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
             1. VariantRecalibrator....................(step 33)
         3. ApplyRecalibration (by intervals)*.........(step 34)
         4. CollectVariantCallingMetrics...............(step 35)
+
+
+**Intervals:**
+   * Los intervalos se pasan con la opción -L.
+   * Gracias a esto, podemos ejecutar en paralelo estas funciones con el Scatter
+   * Los intervalos para el BQSR se generan con el fichero refDict mediante la función CreateSequenceGroupingTSV
+   * En el wdl de gatk, los intervalos para el HaplotypeCaller se generan desde un fichero de entrada del bundle del hg38 (wgs_calling_regions.hg38.interval_list) mediante la función ScatterIntervalList. Y para la parte del multisample usan la función DynamicallyCombineIntervals, con el fichero de entrada del hg38 (hg38.even.handcurated.20k.intervals). Nosotros le estamos pasando directamente el fichero que se crea con la función CreateSequenceGroupingTSV.
+
+
+![](./images/wgs-gatk-pipeline.png)
 
 ---
 
