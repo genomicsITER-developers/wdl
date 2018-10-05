@@ -1,7 +1,7 @@
 WDL
 ===
 
-TODO :warning:
+TO DO :warning:
 
 ---
 
@@ -19,11 +19,11 @@ TODO :warning:
 WESGermlineSNPsIndels
 ---------------------
 
-Pipeline for whole genome and sequencing analysis.
+Pipeline for whole exome and sequencing analysis.
 
 * [Documentation](https://github.com/genomicsITER-developers/wdl/tree/master/WESGermlineSNPsIndels)
 
-TODO :warning:
+TO DO :warning:
 
 ---
 
