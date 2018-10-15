@@ -52,7 +52,7 @@ workflow BaseQualityScoreRecalibrationWF {
       baseRecalReports = BaseRecalibrator.recalibrationReport,
       outputReportsFilename = sampleName + "ready.deduped.recal_data.csv",
       gatkPath = gatkPath,
-        javaOpts = javaOpts
+      javaOpts = javaOpts
   }
 
   call workDir.CopyResultsFilesToDir as copyBqsrReports {input: resultsDir = resultsDir, files = GatherBaseRecalReports.bqsrReports}
