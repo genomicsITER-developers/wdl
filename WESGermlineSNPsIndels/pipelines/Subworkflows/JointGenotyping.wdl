@@ -14,7 +14,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 
 workflow JointGenotypingWF {
 

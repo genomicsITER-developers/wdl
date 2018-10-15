@@ -12,7 +12,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 import "SubWorkflows/QualityControl.wdl" as QC
 
 workflow QualityControlPerSampleWF {
@@ -38,7 +38,7 @@ workflow QualityControlPerSampleWF {
       javaOpts = javaOpts
   }
 
-  call workDir.CopyResultsFilesToDir as copySummaryMergedBam {input: resultsDir = resultsDir, files = ValidateMergedBam.summary}
+  call utils.CopyResultsFilesToDir as copySummaryMergedBam {input: resultsDir = resultsDir, files = ValidateMergedBam.summary}
 
   # ################################################################ #
   # 26. Collect filtered WGS Multiple Metrics with GATK (per-sample) #
@@ -53,7 +53,7 @@ workflow QualityControlPerSampleWF {
       javaOpts = javaOpts
   }
 
-  call workDir.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
+  call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
 
   # ############################################################# #
   # 27. Compute DepthOfCoverage statistics with GATK (per-sample) #
@@ -61,7 +61,7 @@ workflow QualityControlPerSampleWF {
 
   #call DepthOfCoverage as depthOfCov {input:refFasta = refFasta,bamFile = bamFile,refSeq = refSeq,outputBasename = sampleName + ".ready.deduped.DephOfCoverage",gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ################################################ #
   # 28. CallableLoci statistics with GATK (per-lane) #
@@ -69,7 +69,7 @@ workflow QualityControlPerSampleWF {
 
   #call CallableLoci {input:refFasta = refFasta,bamFile = bamFile,outputBasename = sampleName + ".ready.deduped",gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   output {
     File? summary = ValidateMergedBam.summary

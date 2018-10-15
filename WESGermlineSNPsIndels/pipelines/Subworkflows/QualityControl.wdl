@@ -19,7 +19,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 
 workflow QualityControlWF {
 
@@ -62,7 +62,7 @@ workflow QualityControlWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copySummaryFile {input: resultsDir = resultsDir, files = ValidateReadyBam.summary}
+    call utils.CopyResultsFilesToDir as copySummaryFile {input: resultsDir = resultsDir, files = ValidateReadyBam.summary}
 
   } # End step 6
 
@@ -114,7 +114,7 @@ workflow QualityControlWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
+    call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
 
     # ####################################################### #
     # 12. Collect WES Metrics with GATK (per-lane per-sample) #
@@ -159,7 +159,7 @@ workflow QualityControlWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyCollectMetrics {input: resultsDir = resultsDir, 
+    call utils.CopyResultsFilesToDir as copyCollectMetrics {input: resultsDir = resultsDir, 
       files = [CollectRawWgsMetrics.collectedMetrics, CollectWgsMetrics.collectedMetrics, CollectWgsMetricsWithNonZeroCoverage.collectedMetrics, CollectWgsMetricsWithNonZeroCoverage.collectedMetricsPDF]}
 
     # #################################################### #
@@ -177,7 +177,7 @@ workflow QualityControlWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyHsMetrics {input: resultsDir = resultsDir, files = [CollectHsMetrics.hsMetrics, CollectHsMetrics.perTargetCoverage]}
+    call utils.CopyResultsFilesToDir as copyHsMetrics {input: resultsDir = resultsDir, files = [CollectHsMetrics.hsMetrics, CollectHsMetrics.perTargetCoverage]}
 
     # ###################################################### #
     # 14. CollectOxoGMetrics statistics with GATK (per lane) #
@@ -193,7 +193,7 @@ workflow QualityControlWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyOxoGMetrics {input: resultsDir = resultsDir, files = CollectOxoGMetrics.oxoGMetrics}
+    call utils.CopyResultsFilesToDir as copyOxoGMetrics {input: resultsDir = resultsDir, files = CollectOxoGMetrics.oxoGMetrics}
 
   } # End step 8
 
@@ -203,7 +203,7 @@ workflow QualityControlWF {
 
   #call DepthOfCoverage as depthOfCov {input:refFasta = refFasta,bamFile = bamFile,refSeq = refSeq,outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.DepthOfCoverage",gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ########################################################### #
   # 16. CallableLoci statistics with GATK (per-lane per-sample) #
@@ -211,7 +211,7 @@ workflow QualityControlWF {
 
   #call CallableLoci {input:refFasta = refFasta,bamFile = bamFile,outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed",gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ######################################################### #
   # 17. FindCoveredIntervals statistics with GATK (per lane)  #
@@ -221,7 +221,7 @@ workflow QualityControlWF {
 
   #call FindCoveredIntervals as FindUncovered {input:refFasta = refFasta,bamFile = bamFile,regions = regions,intervalPadding = 0,coverageThreshold = 0,minBQ = 0,minMQ = 0,outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.covered_regions.list",uncovered = "--uncovered"gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ################################################### #
   # 18. DiagnoseTargets statistics with GATK (per lane) #
@@ -231,7 +231,7 @@ workflow QualityControlWF {
 
   #call DiagnoseTargets as DiagnoseTargetsUncovered {input:refFasta = refFasta,bamFile = bamFile,regions = FindUncovered.coveredList,missingIntervals = sampleName + ".aligned.merged.deduped.sorted.fixed.DiagnoseTargets.missing_intervals_uncovered.list",intervalPadding = 0,outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.DiagnoseTargets.uncovered.vcf",gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ########################################################### #
   # 19. QualifyMissingIntervals statistics with GATK (per lane) #
@@ -239,7 +239,7 @@ workflow QualityControlWF {
 
   #call QualifyMissingIntervals {input:refFasta = refFasta,bamFile = bamFile,outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.QualifyMissingIntervalss.grp",missingIntervals = DiagnoseTargetsCovered.missingIntervalList,targets = targets,threads = 8,gatkPath = gatkPath,javaOpts = javaOpts}
 
-  # TO DO: call workdir.CopyResultsFilesToDir ...
+  # TO DO: call utils.CopyResultsFilesToDir ...
 
   output {
     File? summary = ValidateReadyBam.summary

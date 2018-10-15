@@ -12,7 +12,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 import "SubWorkflows/Preprocessing.wdl" as Preprocessing
 import "SubWorkflows/QualityControlPerSample.wdl" as QCPerSample
 
@@ -49,9 +49,9 @@ workflow VariantCallingWF {
   # JAVA OPTS
   String javaOpts
 
-  call workDir.ConfigureResultsDirectory as SampleDirectory {input: resultsDir = actualSampleDir}
+  call utils.ConfigureResultsDirectory as SampleDirectory {input: resultsDir = actualSampleDir}
 
-  call workDir.GetFilesFromString as GetBamsArray {input: inputBams = inputBams}
+  call utils.GetFilesFromString as GetBamsArray {input: inputBams = inputBams}
 
   # Step 11 - Merge BAMs per sample and validate
   if ((firstStep <= 11) && (11 <= lastStep)) {
@@ -71,7 +71,7 @@ workflow VariantCallingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyMergedBams {input: resultsDir = SampleDirectory.directory, 
+    call utils.CopyResultsFilesToDir as copyMergedBams {input: resultsDir = SampleDirectory.directory, 
       files = [MergeBamsPerSample.markedBam, MergeBamsPerSample.markedBai, MergeBamsPerSample.markedMD5, MergeBamsPerSample.duplicateMetrics]}
 
   } # End step 11
@@ -130,7 +130,7 @@ workflow VariantCallingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyMergedGVCFs {input: resultsDir = actualSampleDir, 
+    call utils.CopyResultsFilesToDir as copyMergedGVCFs {input: resultsDir = actualSampleDir, 
       files = [MergeVCFs.mergedGVCFs, MergeVCFs.mergedGVCFsIndexes]}
 
   } # End step 13

@@ -12,7 +12,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 
 workflow BaseQualityScoreRecalibrationWF {
 
@@ -85,7 +85,7 @@ workflow BaseQualityScoreRecalibrationWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyBqsrReports {input: resultsDir = resultsDir, files = GatherBaseRecalReports.bqsrReports}
+    call utils.CopyResultsFilesToDir as copyBqsrReports {input: resultsDir = resultsDir, files = GatherBaseRecalReports.bqsrReports}
 
   }  # End step 9
 
@@ -125,7 +125,7 @@ workflow BaseQualityScoreRecalibrationWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyRecalibratedBam {input: resultsDir = resultsDir, 
+    call utils.CopyResultsFilesToDir as copyRecalibratedBam {input: resultsDir = resultsDir, 
     files = [GatherBamRecalibratedFiles.recalibratedBam, GatherBamRecalibratedFiles.recalibratedBamIndex, GatherBamRecalibratedFiles.recalibratedBamChecksum]}
 
   }  # End step 10

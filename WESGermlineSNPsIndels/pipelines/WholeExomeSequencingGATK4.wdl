@@ -18,7 +18,7 @@
 #
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl"              as workDir
+import "SubWorkflows/Utils.wdl"                            as utils
 import "SubWorkflows/Preprocessing.wdl"                    as Preprocessing
 import "SubWorkflows/QualityControl.wdl"                   as QualityControl
 import "SubWorkflows/BaseQualityScoreRecalibration.wdl"    as BQSR
@@ -115,7 +115,7 @@ workflow WholeExomeSequencingGATK4WF {
 
   # Step 0
   if ((firstStep <= 0) && (0 <= lastStep)) {
-    call workDir.ConfigureResultsDirectory as BaseDirectory {input: resultsDir = resultsDir}
+    call utils.ConfigureResultsDirectory as BaseDirectory {input: resultsDir = resultsDir}
   }
   # End step 0
 
@@ -141,7 +141,7 @@ workflow WholeExomeSequencingGATK4WF {
       String sampleName = sampleID + "_" + index
 
       String actualPairDir = resultsDir + "/" + sampleDir
-      call workDir.ConfigureResultsDirectory as ActualDirectory {input: resultsDir = actualPairDir}
+      call utils.ConfigureResultsDirectory as ActualDirectory {input: resultsDir = actualPairDir}
 
       if (wfPreprocess == true) {
         call Preprocessing.PreprocessingWF as PreprocessingSubworkflow {
@@ -230,14 +230,14 @@ workflow WholeExomeSequencingGATK4WF {
 
   if (wfPerSample == true) {
 
-    call workDir.FindFilesInDir as findMD5Bams {
+    call utils.FindFilesInDir as findMD5Bams {
       input:
         dir = resultsDir,
         pattern1 = resultsDir + "/*/*.aligned.merged.deduped.sorted.fixed.bam.md5",
         pattern2 = resultsDir + "/*/*.aligned.merged.deduped.sorted.fixed.bai"
     }
 
-    call WritePerSampleTSV {
+    call utils.WritePerSampleTSV as writeTSVPerSample {
       input:
         fastqReadsTSV = fastqReadsTSV,
         resultsDir = resultsDir,
@@ -246,9 +246,9 @@ workflow WholeExomeSequencingGATK4WF {
         md5Bams = if ((wfPreprocess == true) && (firstStep < 9)) then PreprocessingSubworkflow.fixedBamMD5 else findMD5Bams.files[0]
     }
 
-    call workDir.CopyResultsFilesToDir as CopyPerSampleTSV {input: resultsDir = resultsDir, files = WritePerSampleTSV.perSampleArray}
+    call utils.CopyResultsFilesToDir as CopyPerSampleTSV {input: resultsDir = resultsDir, files = writeTSVPerSample.perSampleArray}
 
-    scatter (sample in read_tsv(WritePerSampleTSV.perSampleArray)) {
+    scatter (sample in read_tsv(writeTSVPerSample.perSampleArray)) {
 
       String dirName = sample[0]
       String inputBams = sample[1]
@@ -342,87 +342,5 @@ workflow WholeExomeSequencingGATK4WF {
 
     # MULTI-SAMPLE
 
-  }
-}
-
-
-task WritePerSampleTSV {
-
-  File fastqReadsTSV
-  String resultsDir
-  String bamSuffix
-
-  Array[File?]? md5Bams # Solo sirve para que espere por el proceso anterior
-
-  command <<<
-    python2 <<CODE
-    import sys
-    import csv
-    import os
-    with open("${fastqReadsTSV}", "r") as read_pairs_file, open("read_samples.tsv", "w") as bam_samples_file:
-        tsvreader = csv.reader(read_pairs_file, delimiter="\t")
-        d = {}
-        for r in tsvreader:
-            sample_name = r[2] + "_" + r[3]
-            sub_dir = r[5]
-            bam_file = sample_name + "${bamSuffix}"
-            bam_file_path = os.path.join("${resultsDir}", sub_dir, bam_file)
-            if os.path.isfile(bam_file_path):
-                if not sample_name in d:
-                    d[sample_name] = []
-                d[sample_name].append(bam_file_path)
-
-        tsvwriter = csv.writer(bam_samples_file, delimiter="\t")
-        for elem in d:
-            tsvwriter.writerow([elem] + [' '.join(d[elem])])
-    CODE
-  >>>
-
-  output {
-    File perSampleArray = "read_samples.tsv"
-  }
-
-  meta {
-    taskDescription: "Create a new TSV file with per-sample information and files."
-  }
-}
-
-
-task WriteSampleNameMapTSV {
-  
-  File? perSampleTSV
-
-  String resultsDir
-  String vcfSuffix
-
-  Array[File?]? gVcfsIndex # Solo para que espere por el proceso anterior
-
-  command <<<
-    python2 <<CODE
-    import sys
-    import csv
-    import os
-    with open("${perSampleTSV}", "r") as per_sample_file, open("sample_name_map.tsv", "w") as sample_name_map:
-        tsvreader = csv.reader(per_sample_file, delimiter="\t")
-        d={}
-        for r in tsvreader:
-            sample_name = r[0]
-            vcf_file = r[0] + "${vcfSuffix}"
-            vcf_file_path = os.path.join("${resultsDir}", sample_name, vcf_file)
-            if os.path.isfile(vcf_file_path):
-                d[sample_name] = vcf_file_path
-
-        tsvwriter = csv.writer(sample_name_map, delimiter="\t")
-        for elem in d:
-            tsvwriter.writerow([elem] + [d[elem]])
-    CODE
-  >>>
-
-  output {
-    File sampleNameMap = "sample_name_map.tsv"
-  }
-
-  meta {
-    taskDescription: "Create a Sample Name Map TSV file for multi-sample stage with the next structure:\n\tHG00096\tHG00096.g.vcf.gz\n\tNA19625\tNA19625.g.vcf.gz\n\tHG00268\tHG00268.g.vcf.gz"
   }
 }

@@ -14,7 +14,7 @@
 #  8. Fix tag values for NM, MD, and UQ
 
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/Utils.wdl" as utils
 
 workflow PreprocessingWF {
 
@@ -83,7 +83,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyUnmappedBams {input: resultsDir = resultsDir, files = FastqsToUnmappedBam.unmappedBam}
+    call utils.CopyResultsFilesToDir as copyUnmappedBams {input: resultsDir = resultsDir, files = FastqsToUnmappedBam.unmappedBam}
   }
 
   # Step 2 - Mark Illumina Adapters
@@ -102,7 +102,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyMarkedIlluminaAdapters  {input: resultsDir = resultsDir,
+    call utils.CopyResultsFilesToDir as copyMarkedIlluminaAdapters  {input: resultsDir = resultsDir,
       files = [MarkIlluminaAdapters.unmappedTaggedBam, MarkIlluminaAdapters.metricsIlluminaAdapters]}
 
   } # End step 2
@@ -123,7 +123,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyConvertedFastq  {input: resultsDir = resultsDir, files = UnmappedBamToFastq.convertedFastq}    
+    call utils.CopyResultsFilesToDir as copyConvertedFastq  {input: resultsDir = resultsDir, files = UnmappedBamToFastq.convertedFastq}    
 
     # ################################ #
     # 4. BWA-MEM (per-lane per-sample) #
@@ -148,7 +148,7 @@ workflow PreprocessingWF {
         outputBamBasename = sampleName + ".aligned"
     }
 
-    call workDir.CopyResultsFilesToDir as copyAlignedBams {input: resultsDir = resultsDir, files = BwaMem.alignedBam}
+    call utils.CopyResultsFilesToDir as copyAlignedBams {input: resultsDir = resultsDir, files = BwaMem.alignedBam}
 
     # ################################################################## #
     # 5. MergeBamAlignment to generate a clean BAM (per-lane per-sample) #
@@ -173,7 +173,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyAlignedUnsortedBams {input: resultsDir = resultsDir, files = MergeBamAlignment.alignedUnsortedBam}
+    call utils.CopyResultsFilesToDir as copyAlignedUnsortedBams {input: resultsDir = resultsDir, files = MergeBamAlignment.alignedUnsortedBam}
 
   } # End step 3
 
@@ -195,7 +195,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copyMarkedFiles  {input: resultsDir = resultsDir, 
+    call utils.CopyResultsFilesToDir as copyMarkedFiles  {input: resultsDir = resultsDir, 
       files = [MarkDuplicates.markedBam, MarkDuplicates.markedMD5, MarkDuplicates.duplicateMetrics]}
 
   } # End step 4
@@ -216,7 +216,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copySortedFiles {input: resultsDir = resultsDir, files = [SortSam.sortedBam, SortSam.sortedBamIndex, SortSam.sortedBamMD5]}
+    call utils.CopyResultsFilesToDir as copySortedFiles {input: resultsDir = resultsDir, files = [SortSam.sortedBam, SortSam.sortedBamIndex, SortSam.sortedBamMD5]}
 
     # ########################################################## #
     # 8. Fix tag values for NM, MD, and UQ (per-lane per-sample) #
@@ -231,7 +231,7 @@ workflow PreprocessingWF {
         javaOpts = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as copySortedFixedFiles {input: resultsDir = resultsDir, 
+    call utils.CopyResultsFilesToDir as copySortedFixedFiles {input: resultsDir = resultsDir, 
       files = [FixBamTags.fixedBam, FixBamTags.fixedBamIndex, FixBamTags.fixedBamMD5]}
 
   } # End step 5
