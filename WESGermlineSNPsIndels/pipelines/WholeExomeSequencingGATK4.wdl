@@ -27,6 +27,10 @@ import "SubWorkflows/Preprocessing.wdl"                    as Preprocessing
 import "SubWorkflows/QualityControl.wdl"                   as QualityControl
 import "SubWorkflows/BaseQualityScoreRecalibration.wdl"    as BQSR
 import "SubWorkflows/VariantCalling.wdl"                   as VariantCalling
+import "SubWorkflows/JointGenotyping.wdl"                  as JointGenotyping
+import "SubWorkflows/VariantQualityScoreRecalibration.wdl" as VQSR
+#import "SubWorkflows/QualityControlMultisample.wdl"        as QC_MultiSample
+#import "SubWorkflows/Annotation.wdl"                       as Annotation
 
 # WORKFLOW DEFINITION
 
@@ -49,6 +53,27 @@ workflow WholeExomeSequencingGATK4WF {
   File dbSnpsIdx
   File dbIndelsM1000g
   File dbIndelsM1000gIdx
+  File hapMapResource
+  File hapMapResourceIndex
+  File omniResource
+  File omniResourceIndex
+  File oneThousandGenomesResource
+  File oneThousandGenomesResourceIndex
+  File millsResource
+  File millsResourceIndex
+  File axiomPolyResource
+  File axiomPolyResourceIndex
+
+  Array[String] indelRecalibrationTrancheValues
+  Array[String] indelRecalibrationAnnotationValues
+  Array[String] snpRecalibrationTrancheValues
+  Array[String] snpRecalibrationAnnotationValues
+
+  Float indelFilterLevel
+  Float snpFilterLevel
+
+  Int indelsMaxGaussians
+  Int snpsMaxGaussians
 
   # READS - TSV read pais for per-sample, per-lane stage
   File fastqReadsTSV
@@ -56,6 +81,9 @@ workflow WholeExomeSequencingGATK4WF {
   String libraryName      # ¿Pasar al TSV?
   String platform         # ¿Pasar al TSV?
   String sequencingCenter # ¿Pasar al TSV?
+
+  # True for GenomicsDBImport, False for CombineGVCFs
+  Boolean useGenomicsDB
 
   # Illumina TruSeq Rapid Exome Capture Kit manifest for QUALIMAP:
   File bedFile
@@ -107,6 +135,11 @@ workflow WholeExomeSequencingGATK4WF {
   Boolean wfVariantCalling
   Boolean wfQC_PerSample
 
+  Boolean wfMultiSample
+  Boolean wfJointGenotyping
+  Boolean wfVQSR
+  Boolean wfQC_MultiSample
+
   # Fix this steps thing...
   Int firstStep
   Int lastStep
@@ -150,76 +183,76 @@ workflow WholeExomeSequencingGATK4WF {
       if (wfPreprocess == true) {
         call Preprocessing.PreprocessingWF as PreprocessingSubworkflow {
           input:
-            firstStep = firstStep,
-            lastStep = lastStep,
-            refFasta = refFasta,
-            refBaseDir = refBaseDir,
-            refBaseName = refBaseName,
-            refAlt = refAlt,
-            refIndex = refIndex,
-            refDict = refDict,
-            refAmb = refAmb,
-            refAnn = refAnn,
-            refBwt = refBwt,
-            refPac = refPac,
-            refSa = refSa,
-            readsFile1 = readsFile1,
-            readsFile2 = readsFile2,
-            sampleName = sampleName,
-            readGroupName = readGroupName,
-            libraryName = libraryName,
-            platformUnit = platformUnit,
-            platform = platform,
+            firstStep        = firstStep,
+            lastStep         = lastStep,
+            refFasta         = refFasta,
+            refBaseDir       = refBaseDir,
+            refBaseName      = refBaseName,
+            refAlt           = refAlt,
+            refIndex         = refIndex,
+            refDict          = refDict,
+            refAmb           = refAmb,
+            refAnn           = refAnn,
+            refBwt           = refBwt,
+            refPac           = refPac,
+            refSa            = refSa,
+            readsFile1       = readsFile1,
+            readsFile2       = readsFile2,
+            sampleName       = sampleName,
+            readGroupName    = readGroupName,
+            libraryName      = libraryName,
+            platformUnit     = platformUnit,
+            platform         = platform,
             sequencingCenter = sequencingCenter,
-            gatkPath = gatkPath,
-            bwaPath = bwaPath,
-            bwaMemCommand = bwaMemCommand,
-            resultsDir = ActualDirectory.directory,
-            javaOpts = javaOpts
+            gatkPath         = gatkPath,
+            bwaPath          = bwaPath,
+            bwaMemCommand    = bwaMemCommand,
+            resultsDir       = ActualDirectory.directory,
+            javaOpts         = javaOpts
         }
       } # End Preprocessing
 
       if (wfQC_PerSamplePerLane == true) {
         call QualityControl.QualityControlWF as QCSubworkflow {
           input:
-            firstStep = firstStep,
-            lastStep = lastStep,
-            refFasta = refFasta,
-            bamFile = select_first([PreprocessingSubworkflow.fixedBam, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam"]),
-            bedFile = bedFile,
+            firstStep      = firstStep,
+            lastStep       = lastStep,
+            refFasta       = refFasta,
+            bamFile        = select_first([PreprocessingSubworkflow.fixedBam, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam"]),
+            bedFile        = bedFile,
             bedFilePadding = bedFilePadding,
-            intervalList = intervalList,
-            baits = baits,
-            targets = targets,
-            resultsDir = actualPairDir,
-            sampleName = sampleName,
-            gatkPath = gatkPath,
-            qualimapPath = qualimapPath,
-            javaOpts = javaOpts,
-            javaMemSize = javaMemSize
+            intervalList   = intervalList,
+            baits          = baits,
+            targets        = targets,
+            resultsDir     = actualPairDir,
+            sampleName     = sampleName,
+            gatkPath       = gatkPath,
+            qualimapPath   = qualimapPath,
+            javaOpts       = javaOpts,
+            javaMemSize    = javaMemSize
         }
       } # End QC
 
       if (wfBQSR == true) {
         call BQSR.BaseQualityScoreRecalibrationWF as BQSRSubworkflow {
           input:
-            inputBam = select_first([PreprocessingSubworkflow.fixedBam, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam"]),
-            inputBai = select_first([PreprocessingSubworkflow.fixedBamIndex, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bai"]),
+            inputBam            = select_first([PreprocessingSubworkflow.fixedBam,      actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam"]),
+            inputBai            = select_first([PreprocessingSubworkflow.fixedBamIndex, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bai"]),
             intervalTargetsFile = intervalTargetsFile, # CAMBIAR
             intervalContigsFile = intervalContigsFile,
-            dbSnps = dbSnps,
-            dbSnpsIdx = dbSnpsIdx,
-            dbIndelsM1000g = dbIndelsM1000g,
-            dbIndelsM1000gIdx = dbIndelsM1000gIdx,
-            refFasta = refFasta,
-            refDict = refDict,
-            refIndex = refIndex,
-            sampleName = sampleName,
-            firstStep = firstStep,
-            lastStep = lastStep,
-            resultsDir = resultsDir,
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
+            dbSnps              = dbSnps,
+            dbSnpsIdx           = dbSnpsIdx,
+            dbIndelsM1000g      = dbIndelsM1000g,
+            dbIndelsM1000gIdx   = dbIndelsM1000gIdx,
+            refFasta            = refFasta,
+            refDict             = refDict,
+            refIndex            = refIndex,
+            sampleName          = sampleName,
+            firstStep           = firstStep,
+            lastStep            = lastStep,
+            resultsDir          = resultsDir,
+            gatkPath            = gatkPath,
+            javaOpts            = javaOpts
         }
       } # End BQSR
 
@@ -236,7 +269,7 @@ workflow WholeExomeSequencingGATK4WF {
 
     call utils.FindFilesInDir as findMD5Bams {
       input:
-        dir = resultsDir,
+        dir      = resultsDir,
         pattern1 = resultsDir + "/*/*.aligned.merged.deduped.sorted.fixed.bam.md5",
         pattern2 = resultsDir + "/*/*.aligned.merged.deduped.sorted.fixed.bai"
     }
@@ -244,10 +277,10 @@ workflow WholeExomeSequencingGATK4WF {
     call utils.WritePerSampleTSV as writeTSVPerSample {
       input:
         fastqReadsTSV = fastqReadsTSV,
-        resultsDir = resultsDir,
-        bamSuffix = ".aligned.merged.deduped.sorted.fixed.bam",
-        #md5Bams = select_first([PreprocessingSubworkflow.fixedBamMD5, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam.md5"])
-        md5Bams = if ((wfPreprocess == true) && (firstStep < 9)) then PreprocessingSubworkflow.fixedBamMD5 else findMD5Bams.files[0]
+        resultsDir    = resultsDir,
+        bamSuffix     = ".aligned.merged.deduped.sorted.fixed.bam",
+        #md5Bams         = select_first([PreprocessingSubworkflow.fixedBamMD5, actualPairDir + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam.md5"])
+        md5Bams       = if ((wfPreprocess == true) && (firstStep < 9)) then PreprocessingSubworkflow.fixedBamMD5 else findMD5Bams.files[0]
     }
 
     call utils.CopyResultsFilesToDir as CopyPerSampleTSV {input: resultsDir = resultsDir, files = writeTSVPerSample.perSampleArray}
@@ -262,22 +295,22 @@ workflow WholeExomeSequencingGATK4WF {
       if (wfVariantCalling == true) {
         call VariantCalling.VariantCallingWF as VCSubworkflow {
           input:
-            actualSampleDir = actualSampleDir,
-            inputBams = inputBams,
-            dirName = dirName,
-            refFasta = refFasta,
-            refAlt = refAlt,
-            refIndex = refIndex,
-            refDict = refDict,
+            actualSampleDir  = actualSampleDir,
+            inputBams        = inputBams,
+            dirName          = dirName,
+            refFasta         = refFasta,
+            refAlt           = refAlt,
+            refIndex         = refIndex,
+            refDict          = refDict,
             TSVIntervalsFile = TSVIntervalsFile,
-            contamination = contamination,
-            maxAltAlleles = maxAltAlleles,
-            intervalPadding = intervalPadding,
-            firstStep = firstStep,
-            lastStep = lastStep,
-            wfQC_PerSample = wfQC_PerSample,
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
+            contamination    = contamination,
+            maxAltAlleles    = maxAltAlleles,
+            intervalPadding  = intervalPadding,
+            firstStep        = firstStep,
+            lastStep         = lastStep,
+            wfQC_PerSample   = wfQC_PerSample,
+            gatkPath         = gatkPath,
+            javaOpts         = javaOpts
         }
       } # End VC
     }
@@ -286,65 +319,163 @@ workflow WholeExomeSequencingGATK4WF {
   ######### END PER-SAMPLE #########
 
 
-  ######### MULTI-SAMPLE (JointGenotypingWF.wdl) #########
+  ######### MULTI-SAMPLE #########
 
-  #if (wfMultiSample == true) {}
+  if (wfMultiSample == true) {
+
+    String multiSampleName = "multi-sample"
+    String multiSampleDir  = resultsDir + "/" + multiSampleName
+
+    call utils.ConfigureResultsDirectory as MultiSampleDirectory {input: resultsDir = multiSampleDir}
+
+    # Create sampleNameMap file with the structure:
+    #   HG00096  HG00096.g.vcf.gz
+    #   NA19625 NA19625.g.vcf.gz
+    #   HG00268 HG00268.g.vcf.gz
+
+    call utils.FindFilesInDir as findGVCFs {
+      input:
+        dir      = resultsDir,
+        pattern1 = resultsDir + "/*/*.ready.deduped.recalibrated.merged.g.vcf.gz.tbi",
+        pattern2 = resultsDir + "/*/*.ready.deduped.recalibrated.merged.g.vcf.gz.md5"
+    }
+
+    File? perSampleTSV = select_first([writeTSVPerSample.perSampleArray, resultsDir + "/read_samples.tsv"])
+
+    call utils.WriteSampleNameMapTSV as writeSampleNameMap {
+      input:
+        perSampleTSV = perSampleTSV,
+        resultsDir   = resultsDir,
+        vcfSuffix    = ".ready.deduped.recalibrated.merged.g.vcf.gz",
+        gVcfsIndex   = if ((wfPerSample == true) && (wfVariantCalling == true)) then VCSubworkflow.mergedGVCFsIndexes else findGVCFs.files[0]
+    }
+
+    call utils.CopyResultsFilesToDir as CopySampleNameMapTSV {input: resultsDir = multiSampleDir, files = writeSampleNameMap.sampleNameMap}
+
+    if (wfJointGenotyping == true) {
+      call JointGenotyping.JointGenotypingWF as JGSubworkflow {
+        input:
+          refFasta        = refFasta,
+          refIndex        = refIndex,
+          refDict         = refDict,
+          dbSnpsVcf       = dbSnps,
+          dbSnpsVcfIdx    = dbSnpsIdx,
+          multiSampleName = multiSampleName,
+          multiSampleDir  = multiSampleDir,
+          sampleNameMap   = writeSampleNameMap.sampleNameMap,
+          intervalList    = intervalList,
+          useGenomicsDB   = useGenomicsDB,
+          firstStep       = firstStep,
+          lastStep        = lastStep,
+          gatkPath        = gatkPath,
+          javaOpts        = javaOpts
+      }
+    } # End JointGenotyping
+
+    if (wfVQSR == true) {
+      call VQSR.VariantQualityScoreRecalibrationWF as VQSRSubworkflow {
+        input:
+          refFasta                           = refFasta,
+          refIndex                           = refIndex,
+          refDict                            = refDict,
+          dbSnps                             = dbSnps,
+          dbSnpsIdx                          = dbSnpsIdx,
+          hapMapResource                     = hapMapResource,
+          hapMapResourceIndex                = hapMapResourceIndex,
+          omniResource                       = omniResource,
+          omniResourceIndex                  = omniResourceIndex,
+          oneThousandGenomesResource         = oneThousandGenomesResource,
+          oneThousandGenomesResourceIndex    = oneThousandGenomesResourceIndex,
+          millsResource                      = millsResource,
+          millsResourceIndex                 = millsResourceIndex,
+          axiomPolyResource                  = axiomPolyResource,
+          axiomPolyResourceIndex             = axiomPolyResourceIndex,
+          gatheredVCF                        = select_first([JGSubworkflow.gatheredVCF,      multiSampleDir + "/" + multiSampleName + ".cohort.genotyped.filtered.sites_only.gathered.vcf.gz"]),
+          gatheredVCFIndex                   = select_first([JGSubworkflow.gatheredVCFIndex, multiSampleDir + "/" + multiSampleName + ".cohort.genotyped.filtered.sites_only.gathered.vcf.gz.tbi"]),
+          indelRecalibrationTrancheValues    = indelRecalibrationTrancheValues,
+          indelRecalibrationAnnotationValues = indelRecalibrationAnnotationValues,
+          snpRecalibrationTrancheValues      = snpRecalibrationTrancheValues,
+          snpRecalibrationAnnotationValues   = snpRecalibrationAnnotationValues,
+          multiSampleName                    = multiSampleName,
+          multiSampleDir                     = multiSampleDir,
+          firstStep                          = firstStep,
+          lastStep                           = lastStep,
+          gatkPath                           = gatkPath,
+          javaOpts                           = javaOpts
+      }
+    } # End VQSR
+
+
+
+
+
+
+
+    #if (wfQC_MultiSample == true) {
+    #  call  as  {
+    #    input:
+    #  }
+    #} # End Multisample QC
+  }
 
   ######### END MULTI-SAMPLE #########
 
 
   output {
     # PER-LANE, PER-SAMPLE
-    Array[File?]? unmappedBam = PreprocessingSubworkflow.unmappedBam
+    Array[File?]? unmappedBam             = PreprocessingSubworkflow.unmappedBam
 
-    Array[File?]? unmappedTaggedBam = PreprocessingSubworkflow.unmappedTaggedBam
+    Array[File?]? unmappedTaggedBam       = PreprocessingSubworkflow.unmappedTaggedBam
     Array[File?]? metricsIlluminaAdapters = PreprocessingSubworkflow.metricsIlluminaAdapters
 
-    Array[File?]? convertedFastq = PreprocessingSubworkflow.convertedFastq
-    Array[File?]? alignedBam = PreprocessingSubworkflow.alignedBam
-    Array[File?]? alignedUnsortedBam = PreprocessingSubworkflow.alignedUnsortedBam
+    Array[File?]? convertedFastq          = PreprocessingSubworkflow.convertedFastq
+    Array[File?]? alignedBam              = PreprocessingSubworkflow.alignedBam
+    Array[File?]? alignedUnsortedBam      = PreprocessingSubworkflow.alignedUnsortedBam
 
-    Array[File?]? markedBam = PreprocessingSubworkflow.markedBam
-    Array[File?]? markedBai = PreprocessingSubworkflow.markedBai
-    Array[File?]? markedMD5 = PreprocessingSubworkflow.markedMD5
-    Array[File?]? duplicateMetrics = PreprocessingSubworkflow.duplicateMetrics
+    Array[File?]? markedBam               = PreprocessingSubworkflow.markedBam
+    Array[File?]? markedBai               = PreprocessingSubworkflow.markedBai
+    Array[File?]? markedMD5               = PreprocessingSubworkflow.markedMD5
+    Array[File?]? duplicateMetrics        = PreprocessingSubworkflow.duplicateMetrics
 
-    Array[File?]? sortedBam = PreprocessingSubworkflow.sortedBam
-    Array[File?]? sortedBamIndex = PreprocessingSubworkflow.sortedBamIndex
-    Array[File?]? sortedBamMD5 = PreprocessingSubworkflow.sortedBamMD5
+    Array[File?]? sortedBam               = PreprocessingSubworkflow.sortedBam
+    Array[File?]? sortedBamIndex          = PreprocessingSubworkflow.sortedBamIndex
+    Array[File?]? sortedBamMD5            = PreprocessingSubworkflow.sortedBamMD5
 
-    Array[File?]? fixedBam = PreprocessingSubworkflow.fixedBam
-    Array[File?]? fixedBamIndex = PreprocessingSubworkflow.fixedBamIndex
-    Array[File?]? fixedBamMD5 = PreprocessingSubworkflow.fixedBamMD5
+    Array[File?]? fixedBam                = PreprocessingSubworkflow.fixedBam
+    Array[File?]? fixedBamIndex           = PreprocessingSubworkflow.fixedBamIndex
+    Array[File?]? fixedBamMD5             = PreprocessingSubworkflow.fixedBamMD5
 
-    Array[File?]? summary = QCSubworkflow.summary
-    Array[Array[File]?]? multMetrics = QCSubworkflow.multMetrics
-    Array[File?]? rawMetrics = QCSubworkflow.rawMetrics
-    Array[File?]? wgsMetrics = QCSubworkflow.wgsMetrics
-    Array[File?]? wgsNonZeroMetrics = QCSubworkflow.wgsNonZeroMetrics
-    Array[File?]? wgsNonZeroMetricsPDF = QCSubworkflow.wgsNonZeroMetricsPDF
-    Array[File?]? hsMetrics = QCSubworkflow.hsMetrics
-    Array[File?]? hsPerTargetMetrics = QCSubworkflow.hsPerTargetMetrics
-    Array[File?]? oxoGMetrics = QCSubworkflow.oxoGMetrics
+    Array[File?]? summary                 = QCSubworkflow.summary
+    Array[Array[File]?]? multMetrics      = QCSubworkflow.multMetrics
+    Array[File?]? rawMetrics              = QCSubworkflow.rawMetrics
+    Array[File?]? wgsMetrics              = QCSubworkflow.wgsMetrics
+    Array[File?]? wgsNonZeroMetrics       = QCSubworkflow.wgsNonZeroMetrics
+    Array[File?]? wgsNonZeroMetricsPDF    = QCSubworkflow.wgsNonZeroMetricsPDF
+    Array[File?]? hsMetrics               = QCSubworkflow.hsMetrics
+    Array[File?]? hsPerTargetMetrics      = QCSubworkflow.hsPerTargetMetrics
+    Array[File?]? oxoGMetrics             = QCSubworkflow.oxoGMetrics
 
-    Array[File?]? recalibrationReports = BQSRSubworkflow.recalibrationReports
-    Array[File?]? recalibratedBam = BQSRSubworkflow.recalibratedBam
-    Array[File?]? recalibratedBamIndex = BQSRSubworkflow.recalibratedBamIndex
+    Array[File?]? recalibrationReports    = BQSRSubworkflow.recalibrationReports
+    Array[File?]? recalibratedBam         = BQSRSubworkflow.recalibratedBam
+    Array[File?]? recalibratedBamIndex    = BQSRSubworkflow.recalibratedBamIndex
     Array[File?]? recalibratedBamChecksum = BQSRSubworkflow.recalibratedBamChecksum
 
     # PER-SAMPLE
-    Array[File?]? bamsPerSample = VCSubworkflow.bamsPerSample
-    Array[File?]? baisPerSample = VCSubworkflow.baisPerSample
-    Array[File?]? md5sPerSample = VCSubworkflow.md5sPerSample
-    Array[File?]? dupMetricsPerSample = VCSubworkflow.dupMetricsPerSample
+    Array[File?]? bamsPerSample           = VCSubworkflow.bamsPerSample
+    Array[File?]? baisPerSample           = VCSubworkflow.baisPerSample
+    Array[File?]? md5sPerSample           = VCSubworkflow.md5sPerSample
+    Array[File?]? dupMetricsPerSample     = VCSubworkflow.dupMetricsPerSample
 
-    Array[File?]? summaryVC = VCSubworkflow.summary
-    Array[Array[File]?]? multMetricsVC = VCSubworkflow.multMetrics
+    Array[File?]? summaryVC               = VCSubworkflow.summary
+    Array[Array[File]?]? multMetricsVC    = VCSubworkflow.multMetrics
 
-    Array[File?]? mergedGVCFs = VCSubworkflow.mergedGVCFs
-    Array[File?]? mergedGVCFsIndexes = VCSubworkflow.mergedGVCFsIndexes
+    Array[File?]? mergedGVCFs             = VCSubworkflow.mergedGVCFs
+    Array[File?]? mergedGVCFsIndexes      = VCSubworkflow.mergedGVCFsIndexes
 
     # MULTI-SAMPLE
+    File? gatheredVCF                     = JGSubworkflow.gatheredVCF
+    File? gatheredVCFIndex                = JGSubworkflow.gatheredVCFIndex
+
 
   }
 }

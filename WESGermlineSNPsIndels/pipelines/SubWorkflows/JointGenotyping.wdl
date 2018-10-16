@@ -5,8 +5,8 @@
 
 # All steps per-lane per-sample:
 #
-# 31. 
-# 32. 
+# 31. ...
+# 32. ...
 # 33. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file
 # 34. Combine per-sample gVCF files produced by HaplotypeCaller into a multi-sample gVCF file
 # 35. Perform joint genotyping on gVCF files produced by HaplotypeCaller
@@ -40,6 +40,9 @@ workflow JointGenotypingWF {
   # than a z-score of -4.5 which is a p-value of 3.4e-06, which phred-scaled is 54.69
   Float excessHetThreshold = 54.69
 
+  Int firstStep
+  Int lastStep
+
   String gatkPath
 
   String javaOpts
@@ -50,33 +53,33 @@ workflow JointGenotypingWF {
     # ONLY FOR GENOMICSDBIMPORT
     if (useGenomicsDB == true) {
 
-      scatter (interval in intervalList) {
+      scatter (interval in intervalList) { # CHANGE THIS INTERVALLIST FILE
 
         # ########################################################################################### #
         # 31.  #
         # ########################################################################################### #
 
-        call ImportGVCFs {}
+        #call ImportGVCFs {}
 
         # ########################################################################################### #
         # 32.  #
         # ########################################################################################### #
 
-        call GenotypeGVCFsWithGenomicsDB {}
+        #call GenotypeGVCFsWithGenomicsDB {}
 
         # ######################################################################################## #
         # 33. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file #
         # ######################################################################################## #
 
-        call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithGenomicsDB {
-          input:
-            vcf = GenotypeGVCFsWithGenomicsDB.outputVCF,
-            vcfIndex = GenotypeGVCFsWithGenomicsDB.outputVCFIndex,
-            excessHetThreshold = excessHetThreshold,
-            outputBasename = multiSampleName + ".cohort.genotyped.filtered",
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
-        }
+        #call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithGenomicsDB {
+        #  input:
+        #    vcf = GenotypeGVCFsWithGenomicsDB.outputVCF,
+        #    vcfIndex = GenotypeGVCFsWithGenomicsDB.outputVCFIndex,
+        #    excessHetThreshold = excessHetThreshold,
+        #    outputBasename = multiSampleName + ".cohort.genotyped.filtered",
+        #    gatkPath = gatkPath,
+        #    javaOpts = javaOpts
+        #}
       }
     }
 
@@ -95,15 +98,15 @@ workflow JointGenotypingWF {
 
         call CombineGVCFs {
           input:
-            refFasta = refFasta,
-            refDict = refDict,
-            refIndex = refIndex,
-            gVCFs = getGVcfs.gVCFs,
-            gVCFsIndex = getGVcfsIndex.gVCFs,
-            interval = interval,
+            refFasta       = refFasta,
+            refDict        = refDict,
+            refIndex       = refIndex,
+            gVCFs          = getGVcfs.gVCFs,
+            gVCFsIndex     = getGVcfsIndex.gVCFs,
+            interval       = interval,
             outputBasename = multiSampleName + ".cohort",
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
+            gatkPath       = gatkPath,
+            javaOpts       = javaOpts
         }
 
         # ###################################################################### #
@@ -112,17 +115,17 @@ workflow JointGenotypingWF {
 
         call GenotypeGVCFsWithCohortGVCF {
           input:
-            gVCF = CombineGVCFs.outputCohort,
-            gVCFIndex = CombineGVCFs.outputCohortIndex,
-            interval = interval,
+            gVCF           = CombineGVCFs.outputCohort,
+            gVCFIndex      = CombineGVCFs.outputCohortIndex,
+            interval       = interval,
             outputBasename = multiSampleName + ".cohort.genotyped",
-            refFasta = refFasta,
-            refIndex = refIndex,
-            refDict = refDict,
-            dbSnpsVcf = dbSnpsVcf,
-            dbSnpsVcfIdx = dbSnpsVcfIdx,
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
+            refFasta       = refFasta,
+            refIndex       = refIndex,
+            refDict        = refDict,
+            dbSnpsVcf      = dbSnpsVcf,
+            dbSnpsVcfIdx   = dbSnpsVcfIdx,
+            gatkPath       = gatkPath,
+            javaOpts       = javaOpts
         }
 
         # ######################################################################################## #
@@ -131,12 +134,12 @@ workflow JointGenotypingWF {
 
         call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithCohortGVCF {
           input:
-            vcf = GenotypeGVCFsWithCohortGVCF.outputVCF,
-            vcfIndex = GenotypeGVCFsWithCohortGVCF.outputVCFIndex,
+            vcf                = GenotypeGVCFsWithCohortGVCF.outputVCF,
+            vcfIndex           = GenotypeGVCFsWithCohortGVCF.outputVCFIndex,
             excessHetThreshold = excessHetThreshold,
-            outputBasename = multiSampleName + ".cohort.genotyped.filtered",
-            gatkPath = gatkPath,
-            javaOpts = javaOpts
+            outputBasename     = multiSampleName + ".cohort.genotyped.filtered",
+            gatkPath           = gatkPath,
+            javaOpts           = javaOpts
         }
       }
     }
@@ -147,16 +150,21 @@ workflow JointGenotypingWF {
 
     call GatherVCFs as SitesOnlyGatherVcf {
       input:
-        inputVCFs = write_lines(select_first([HardFilterAndMakeSitesOnlyVcfWithGenomicsDB.sitesOnlyVcf, HardFilterAndMakeSitesOnlyVcfWithCohortGVCF.sitesOnlyVcf])),
+        #inputVCFs = write_lines(select_first([HardFilterAndMakeSitesOnlyVcfWithGenomicsDB.sitesOnlyVcf, HardFilterAndMakeSitesOnlyVcfWithCohortGVCF.sitesOnlyVcf])),
+        inputVCFs      = write_lines(HardFilterAndMakeSitesOnlyVcfWithCohortGVCF.sitesOnlyVcf),
         outputBasename = multiSampleName + ".cohort.genotyped.filtered.sites_only.gathered",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
-    call workDir.CopyResultsFilesToDir as CopyGatheredVCF {input: resultsDir = multiSampleDir, files = [SitesOnlyGatherVcf.gatheredVCF, SitesOnlyGatherVcf.gatheredVCFIndex]}
+    call utils.CopyResultsFilesToDir as CopyGatheredVCF {input: resultsDir = multiSampleDir, files = [SitesOnlyGatherVcf.gatheredVCF, SitesOnlyGatherVcf.gatheredVCFIndex]}
 
   } # End step 14
 
+  output {
+    File? gatheredVCF      = SitesOnlyGatherVcf.gatheredVCF
+    File? gatheredVCFIndex = SitesOnlyGatherVcf.gatheredVCFIndex
+  }
 }
 
 
@@ -221,7 +229,7 @@ task CombineGVCFs {
   }
 
   output {
-    File outputCohort = "${outputBasename}.g.vcf.gz"
+    File outputCohort      = "${outputBasename}.g.vcf.gz"
     File outputCohortIndex = "${outputBasename}.g.vcf.gz.tbi"
   }
 
@@ -265,7 +273,7 @@ task GenotypeGVCFsWithCohortGVCF {
   # --only-output-calls-starting-in-intervals true \
 
   output {
-    File outputVCF = "${outputBasename}.vcf.gz"
+    File outputVCF      = "${outputBasename}.vcf.gz"
     File outputVCFIndex = "${outputBasename}.vcf.gz.tbi"
   }
 
@@ -303,10 +311,10 @@ task HardFilterAndMakeSitesOnlyVcf {
   }
 
   output {
-    File variantFilteredVcf = "${outputBasename}.vcf.gz"
+    File variantFilteredVcf      = "${outputBasename}.vcf.gz"
     File variantFilteredVcfIndex = "${outputBasename}.vcf.gz.tbi"
-    File sitesOnlyVcf = "${outputBasename}.sites_only.vcf.gz"
-    File sitesOnlyVcfIndex = "${outputBasename}.sites_only.vcf.gz.tbi"
+    File sitesOnlyVcf            = "${outputBasename}.sites_only.vcf.gz"
+    File sitesOnlyVcfIndex       = "${outputBasename}.sites_only.vcf.gz.tbi"
   }
 
   meta {
@@ -340,7 +348,7 @@ task GatherVCFs {
   >>>
 
   output {
-    File gatheredVCF = "${outputBasename}.vcf.gz"
+    File gatheredVCF      = "${outputBasename}.vcf.gz"
     File gatheredVCFIndex = "${outputBasename}.vcf.gz.tbi"
   }
 

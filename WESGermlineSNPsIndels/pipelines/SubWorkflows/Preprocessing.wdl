@@ -70,17 +70,17 @@ workflow PreprocessingWF {
 
     call FastqsToUnmappedBam {
       input:
-        readsFile1 = readsFile1,
-        readsFile2 = readsFile1,
-        sampleName = sampleName,
-        readGroupName = readGroupName,
-        libraryName = libraryName,
-        platformUnit = platformUnit,
-        platform = platform,
+        readsFile1       = readsFile1,
+        readsFile2       = readsFile1,
+        sampleName       = sampleName,
+        readGroupName    = readGroupName,
+        libraryName      = libraryName,
+        platformUnit     = platformUnit,
+        platform         = platform,
         sequencingCenter = sequencingCenter,
-        gatkPath = gatkPath,
-        outputBasename = sampleName + ".unmapped",
-        javaOpts = javaOpts
+        gatkPath         = gatkPath,
+        outputBasename   = sampleName + ".unmapped",
+        javaOpts         = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyUnmappedBams {input: resultsDir = resultsDir, files = FastqsToUnmappedBam.unmappedBam}
@@ -95,11 +95,11 @@ workflow PreprocessingWF {
 
     call MarkIlluminaAdapters {
       input:
-        unmappedBam = FastqsToUnmappedBam.unmappedBam,
+        unmappedBam     = FastqsToUnmappedBam.unmappedBam,
         metricsFilename = sampleName + ".unmapped.markilluminaadapters.metrics",
-        gatkPath = gatkPath,
-        outputBasename = sampleName + ".unmapped.markilluminaadapters",
-        javaOpts = javaOpts
+        gatkPath        = gatkPath,
+        outputBasename  = sampleName + ".unmapped.markilluminaadapters",
+        javaOpts        = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyMarkedIlluminaAdapters  {input: resultsDir = resultsDir,
@@ -117,10 +117,10 @@ workflow PreprocessingWF {
 
     call UnmappedBamToFastq {
       input:
-        unmappedBam = select_first([MarkIlluminaAdapters.unmappedTaggedBam, resultsDir + "/" + ".unmapped.markilluminaadapters.bam"]),
-        gatkPath = gatkPath,
+        unmappedBam    = select_first([MarkIlluminaAdapters.unmappedTaggedBam, resultsDir + "/" + ".unmapped.markilluminaadapters.bam"]),
+        gatkPath       = gatkPath,
         outputBasename = sampleName,
-        javaOpts = javaOpts
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyConvertedFastq  {input: resultsDir = resultsDir, files = UnmappedBamToFastq.convertedFastq}    
@@ -131,20 +131,20 @@ workflow PreprocessingWF {
 
     call BwaMem {
       input:
-        refFasta = refFasta,
-        refAlt = refAlt,
-        refIndex = refIndex,
-        refDict = refDict,
-        refAmb = refAmb,
-        refAnn = refAnn,
-        refBwt = refBwt,
-        refPac = refPac,
-        refSa = refSa,
-        readsFile = UnmappedBamToFastq.convertedFastq,
-        sampleName = sampleName,
-        bwaPath = bwaPath,
-        bwaMemCommand = bwaMemCommand,
-        gatkPath = gatkPath,
+        refFasta          = refFasta,
+        refAlt            = refAlt,
+        refIndex          = refIndex,
+        refDict           = refDict,
+        refAmb            = refAmb,
+        refAnn            = refAnn,
+        refBwt            = refBwt,
+        refPac            = refPac,
+        refSa             = refSa,
+        readsFile         = UnmappedBamToFastq.convertedFastq,
+        sampleName        = sampleName,
+        bwaPath           = bwaPath,
+        bwaMemCommand     = bwaMemCommand,
+        gatkPath          = gatkPath,
         outputBamBasename = sampleName + ".aligned"
     }
 
@@ -156,21 +156,21 @@ workflow PreprocessingWF {
 
     call MergeBamAlignment {
       input:
-        refFasta = refFasta,
-        refIndex = refIndex,
-        refDict = refDict,
-        refAmb = refAmb,
-        refAnn = refAnn,
-        refBwt = refBwt,
-        refPac = refPac,
-        refSa = refSa,
-        sampleName = sampleName,
+        refFasta          = refFasta,
+        refIndex          = refIndex,
+        refDict           = refDict,
+        refAmb            = refAmb,
+        refAnn            = refAnn,
+        refBwt            = refBwt,
+        refPac            = refPac,
+        refSa             = refSa,
+        sampleName        = sampleName,
         # Select unmappedBam from FastqsToUnmappedBam function out file or resultsDir file
-        unmappedBam = select_first([FastqsToUnmappedBam.unmappedBam, resultsDir + "/" + sampleName + ".unmapped.bam"]),
-        alignedBam = BwaMem.alignedBam,
-        gatkPath = gatkPath,
+        unmappedBam       = select_first([FastqsToUnmappedBam.unmappedBam, resultsDir + "/" + sampleName + ".unmapped.bam"]),
+        alignedBam        = BwaMem.alignedBam,
         outputBamBasename = sampleName + ".aligned.merged",
-        javaOpts = javaOpts
+        gatkPath          = gatkPath,
+        javaOpts          = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyAlignedUnsortedBams {input: resultsDir = resultsDir, files = MergeBamAlignment.alignedUnsortedBam}
@@ -187,12 +187,12 @@ workflow PreprocessingWF {
 
     call MarkDuplicates {
       input:
-        bams = select_first([MergeBamAlignment.alignedUnsortedBam, resultsDir + "/" + sampleName + ".aligned.merged.bam"]),
-        gatkPath = gatkPath,
+        bams              = select_first([MergeBamAlignment.alignedUnsortedBam, resultsDir + "/" + sampleName + ".aligned.merged.bam"]),
+        gatkPath          = gatkPath,
         outputBamBasename = sampleName + ".aligned.merged.deduped",
-        metricsFilename = sampleName + ".aligned.merged.deduped.MarkDuplicates.metrics.txt",
-        sortOrder = "queryname",
-        javaOpts = javaOpts
+        metricsFilename   = sampleName + ".aligned.merged.deduped.MarkDuplicates.metrics.txt",
+        sortOrder         = "queryname",
+        javaOpts          = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyMarkedFiles  {input: resultsDir = resultsDir, 
@@ -210,10 +210,10 @@ workflow PreprocessingWF {
 
     call SortSam {
       input:
-        bamToSort = select_first([MarkDuplicates.markedBam, resultsDir + "/" + sampleName + ".aligned.merged.deduped.bam"]),
+        bamToSort      = select_first([MarkDuplicates.markedBam, resultsDir + "/" + sampleName + ".aligned.merged.deduped.bam"]),
         outputBasename = sampleName + ".aligned.merged.deduped.sorted",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copySortedFiles {input: resultsDir = resultsDir, files = [SortSam.sortedBam, SortSam.sortedBamIndex, SortSam.sortedBamMD5]}
@@ -224,11 +224,11 @@ workflow PreprocessingWF {
 
     call FixBamTags {
       input:
-        sortedBam = SortSam.sortedBam,
+        sortedBam      = SortSam.sortedBam,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed",
-        refFasta = refFasta,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        refFasta       = refFasta,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copySortedFixedFiles {input: resultsDir = resultsDir, 
@@ -238,26 +238,26 @@ workflow PreprocessingWF {
 
 
   output {
-    File? unmappedBam = FastqsToUnmappedBam.unmappedBam
+    File? unmappedBam             = FastqsToUnmappedBam.unmappedBam
 
-    File? unmappedTaggedBam = MarkIlluminaAdapters.unmappedTaggedBam
+    File? unmappedTaggedBam       = MarkIlluminaAdapters.unmappedTaggedBam
     File? metricsIlluminaAdapters = MarkIlluminaAdapters.metricsIlluminaAdapters
 
-    File? convertedFastq = UnmappedBamToFastq.convertedFastq
-    File? alignedBam = BwaMem.alignedBam
-    File? alignedUnsortedBam = MergeBamAlignment.alignedUnsortedBam
+    File? convertedFastq          = UnmappedBamToFastq.convertedFastq
+    File? alignedBam              = BwaMem.alignedBam
+    File? alignedUnsortedBam      = MergeBamAlignment.alignedUnsortedBam
 
-    File? markedBam = MarkDuplicates.markedBam
-    File? markedBai = MarkDuplicates.markedBai
-    File? markedMD5 = MarkDuplicates.markedMD5
-    File? duplicateMetrics = MarkDuplicates.duplicateMetrics
+    File? markedBam               = MarkDuplicates.markedBam
+    File? markedBai               = MarkDuplicates.markedBai
+    File? markedMD5               = MarkDuplicates.markedMD5
+    File? duplicateMetrics        = MarkDuplicates.duplicateMetrics
 
-    File? sortedBam = SortSam.sortedBam
-    File? sortedBamIndex = SortSam.sortedBamIndex
-    File? sortedBamMD5 = SortSam.sortedBamMD5
-    File? fixedBam = FixBamTags.fixedBam
-    File? fixedBamIndex = FixBamTags.fixedBamIndex
-    File? fixedBamMD5 = FixBamTags.fixedBamMD5
+    File? sortedBam               = SortSam.sortedBam
+    File? sortedBamIndex          = SortSam.sortedBamIndex
+    File? sortedBamMD5            = SortSam.sortedBamMD5
+    File? fixedBam                = FixBamTags.fixedBam
+    File? fixedBamIndex           = FixBamTags.fixedBamIndex
+    File? fixedBamMD5             = FixBamTags.fixedBamMD5
   }
 }
 
@@ -324,7 +324,7 @@ task MarkIlluminaAdapters {
   }
 
   output {
-    File unmappedTaggedBam = "${outputBasename}.bam"
+    File unmappedTaggedBam       = "${outputBasename}.bam"
     File metricsIlluminaAdapters = "${metricsFilename}"
   }
 
@@ -405,7 +405,7 @@ task BwaMem {
   }
 
   output {
-    File alignedBam = "${outputBamBasename}.bam"
+    File alignedBam   = "${outputBamBasename}.bam"
     File bwaStderrLog = "${outputBamBasename}.bwa.stderr.log"
   }
 
@@ -509,9 +509,9 @@ task MarkDuplicates {
   >>>
 
   output {
-    File markedBam = "${outputBamBasename}.bam"
-    File markedBai = "${outputBamBasename}.bai"
-    File markedMD5 = "${outputBamBasename}.bam.md5"
+    File markedBam        = "${outputBamBasename}.bam"
+    File markedBai        = "${outputBamBasename}.bai"
+    File markedMD5        = "${outputBamBasename}.bam.md5"
     File duplicateMetrics = "${metricsFilename}"
   }
 
@@ -541,9 +541,9 @@ task SortSam {
   }
 
   output {
-    File sortedBam = "${outputBasename}.bam"
+    File sortedBam      = "${outputBasename}.bam"
     File sortedBamIndex = "${outputBasename}.bai"
-    File sortedBamMD5 = "${outputBasename}.bam.md5"
+    File sortedBamMD5   = "${outputBasename}.bam.md5"
   }
 
   meta {
@@ -574,9 +574,9 @@ task FixBamTags {
   }
 
   output {
-    File fixedBam = "${outputBasename}.bam"
+    File fixedBam      = "${outputBasename}.bam"
     File fixedBamIndex = "${outputBasename}.bai"
-    File fixedBamMD5 = "${outputBasename}.bam.md5"
+    File fixedBamMD5   = "${outputBasename}.bam.md5"
   }
 
   meta {
