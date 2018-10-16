@@ -241,7 +241,6 @@ task HaplotypeCaller {
       ${"-contamination " + contamination} \
       --max-alternate-alleles ${maxAltAlleles} \
       -ERC GVCF \
-      --annotation HaplotypeScore \
       --annotation MappingQualityRankSumTest \
       --annotation QualByDepth \
       --annotation ReadPosRankSumTest \
