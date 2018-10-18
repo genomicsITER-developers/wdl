@@ -3,22 +3,120 @@
 #
 # Workflow:
 #
-# A. Per sample, per lane
-# 
-#   1. Preprocessing
-#   2. QualityControl
-#   3. BQSR
+# A. wfPerSamplePerLane:
 #
-# B. Per sample
+#  1. Preprocessing:
 #
-#   4. Variant Calling
+#     Step 1: Fastq to uBAM:
+#        1.1 FastqsToUnmappedBam..............................................................1
+#     Step 2: Mark Illumina Adapters:
+#        2.1 MarkIlluminaAdapters.............................................................2
 #
-# C. Multi-sample
+#     Step 3: SamToFastq, BWA-MEM, and MergeBamAlignment to generate a clean BAM:
+#        3.1 UnmappedBamToFastq...............................................................3
+#        3.2 BwaMem...........................................................................4
+#        3.3 MergeBamAlignment................................................................5
 #
-#   5. Joint Genotyping
+#     Step 4: Mark duplicates:
+#        4.1 MarkDuplicates...................................................................6
 #
-# TODO:
-#  - ¿Añadir opción TMP_DIR para ficheros temporales?
+#     Step 5: SortSam:
+#        5.1 SortSam..........................................................................7
+#        5.2 FixBamTags.......................................................................8
+#
+#
+#  2. QualityControl (Per Sample, Per Lane):
+#
+#     Step 6: Validate:
+#        6.1 ValidateReadyBam.................................................................9
+#
+#     Step 7: Qualimap:
+#        7.1 QualimapZeroPadding, QualimapWithPadding.........................................10
+#
+#     Step 8: Collect metrics:
+#        8.1 CollectMultipleMetrics...........................................................11
+#        8.2 CollectRawWgsMetrics, CollectWgsMetrics, CollectWgsMetricsWithNonZeroCoverage....12
+#        8.3 CollectHsMetrics.................................................................13
+#        8.4 CollectOxoGMetrics...............................................................14
+#        8.5 DepthOfCoverage??................................................................15
+#        8.6 CallableLoci??...................................................................16
+#        8.7 FindCoveredIntervals??...........................................................17
+#        8.8 DiagnoseTargets??................................................................18
+#        8.9 QualifyMissingIntervals??........................................................19
+#
+#
+#  3. BaseQualityScoreRecalibration:
+#
+#     Step 9: Base recalibrator and gather the results:
+#        9.1 BaseRecalibrator.................................................................20
+#        9.2 GatherBaseRecalReports...........................................................21
+#
+#     Step 10: Apply recalibration and gather the results:
+#        10.1 ApplyBQSR.......................................................................22
+#        10.2 GatherBamRecalibratedFiles......................................................23
+#
+#
+# B. wfPerSample:
+#
+#  Step 11: Merge Bams per sample:
+#  11.1 MarkDuplicates........................................................................24
+#
+#  4. VariantCalling:
+#
+#     Step 12: QualityControl (Per Sample):
+#        12.1 ValidateMergedBam...............................................................25
+#        12.2 CollectMultipleMetrics..........................................................26
+#        12.3 QualimapZeroPadding, QualimapWithPadding........................................27
+#        12.4 DepthOfCoverage??...............................................................28
+#        12.5 CallableLoci??..................................................................29
+#
+#     Step 13:  Haplotype Caller and Merge results:
+#        13.1 HaplotypeCaller.................................................................30
+#        13.2 MergeGVCFs......................................................................31
+#
+#
+# C.................................................... wfMultiSample:
+#
+#  5. JointGenotyping:
+#
+#     Step 14: Joint Genotyping:
+#        IF genomicsDBImport:
+#           14.1 ImportGVCFs..................................................................32
+#           14.2 GenotypeGVCFsWithGenomicsDB..................................................33
+#           14.3 HardFilterAndMakeSitesOnlyVcfWithGenomicsDB..................................34
+#
+#        ELSE IF CombineGVCFs:
+#           14.4 CombineGVCFs.................................................................35
+#           14.5 GenotypeGVCFsWithCohortGVCF..................................................36
+#           14.6 HardFilterAndMakeSitesOnlyVcfWithCohortGVCF..................................37
+#
+#        14.7 Joint Genotyping: SitesOnlyGatherVcf............................................38
+#
+#
+#  6. VQSR:
+#     Step 15: VQSR for indels and snps:
+#        15.1 IndelsVariantRecalibrator.......................................................39
+#        15.2 SNPsVariantRecalibratorCreateModel..............................................40
+#
+#     Step 16: Apply VQSR:
+#        16.1 ApplyRecalibration..............................................................41
+#
+#
+#  7. QualityControl (Multi-sample):
+#
+#     Step 17: Collect VC metrics:
+#        17.1 CollectVariantCallingMetrics....................................................42
+#
+#     Step 18: Variant callset evaluation:
+#        18.1 VariantEval??...................................................................43
+#
+#
+#  8. Annotation:
+#
+#     Step 19: Annotation with Annovar, SnpEff and GATK
+#        19.1 table_annovar.pl................................................................44
+#        19.2 snpeff..........................................................................45
+#        19.3 VariantAnnotator................................................................46
 #
 
 # IMPORTS
@@ -29,8 +127,8 @@ import "SubWorkflows/BaseQualityScoreRecalibration.wdl"    as BQSR
 import "SubWorkflows/VariantCalling.wdl"                   as VariantCalling
 import "SubWorkflows/JointGenotyping.wdl"                  as JointGenotyping
 import "SubWorkflows/VariantQualityScoreRecalibration.wdl" as VQSR
-#import "SubWorkflows/QualityControlMultisample.wdl"        as QC_MultiSample
-#import "SubWorkflows/Annotation.wdl"                       as Annotation
+import "SubWorkflows/QualityControlMultiSample.wdl"        as QC_MultiSample
+import "SubWorkflows/Annotation.wdl"                       as Annotation
 
 # WORKFLOW DEFINITION
 
@@ -72,15 +170,17 @@ workflow WholeExomeSequencingGATK4WF {
   Float indelFilterLevel
   Float snpFilterLevel
 
+  Int snpVQSRDownsampleFactor
+
   Int indelsMaxGaussians
   Int snpsMaxGaussians
 
   # READS - TSV read pais for per-sample, per-lane stage
   File fastqReadsTSV
   Array[Array[File]] pairReads = read_tsv(fastqReadsTSV)
-  String libraryName      # ¿Pasar al TSV?
-  String platform         # ¿Pasar al TSV?
-  String sequencingCenter # ¿Pasar al TSV?
+  String libraryName      # Pasar al TSV??
+  String platform         # Pasar al TSV??
+  String sequencingCenter # Pasar al TSV??
 
   # True for GenomicsDBImport, False for CombineGVCFs
   Boolean useGenomicsDB
@@ -122,6 +222,13 @@ workflow WholeExomeSequencingGATK4WF {
   String qualimapPath
   String javaMemSize
 
+  # ANNOVAR
+  String annovarPath
+  String humanDB
+
+  # SNPEFF
+  String snpEffPath
+
   # RESULTS DIR
   String resultsDir
 
@@ -139,6 +246,7 @@ workflow WholeExomeSequencingGATK4WF {
   Boolean wfJointGenotyping
   Boolean wfVQSR
   Boolean wfQC_MultiSample
+  Boolean wfAnnotation
 
   # Fix this steps thing...
   Int firstStep
@@ -302,6 +410,8 @@ workflow WholeExomeSequencingGATK4WF {
             refAlt           = refAlt,
             refIndex         = refIndex,
             refDict          = refDict,
+            bedFile          = bedFile,
+            bedFilePadding   = bedFilePadding,
             TSVIntervalsFile = TSVIntervalsFile,
             contamination    = contamination,
             maxAltAlleles    = maxAltAlleles,
@@ -310,7 +420,9 @@ workflow WholeExomeSequencingGATK4WF {
             lastStep         = lastStep,
             wfQC_PerSample   = wfQC_PerSample,
             gatkPath         = gatkPath,
-            javaOpts         = javaOpts
+            qualimapPath     = qualimapPath,
+            javaOpts         = javaOpts,
+            javaMemSize      = javaMemSize
         }
       } # End VC
     }
@@ -396,6 +508,11 @@ workflow WholeExomeSequencingGATK4WF {
           indelRecalibrationAnnotationValues = indelRecalibrationAnnotationValues,
           snpRecalibrationTrancheValues      = snpRecalibrationTrancheValues,
           snpRecalibrationAnnotationValues   = snpRecalibrationAnnotationValues,
+          snpVQSRDownsampleFactor            = snpVQSRDownsampleFactor,
+          indelFilterLevel                   = indelFilterLevel,
+          snpFilterLevel                     = snpFilterLevel,
+          indelsMaxGaussians                 = indelsMaxGaussians,
+          snpsMaxGaussians                   = snpsMaxGaussians,
           multiSampleName                    = multiSampleName,
           multiSampleDir                     = multiSampleDir,
           firstStep                          = firstStep,
@@ -406,18 +523,42 @@ workflow WholeExomeSequencingGATK4WF {
     } # End VQSR
 
 
+    if (wfQC_MultiSample == true) {
+      call QC_MultiSample.QualityControlMultiSampleWF as QCMultiSampleSubworkflow {
+        input:
+          refDict         = refDict,
+          recalVCF        = select_first([VQSRSubworkflow.recalibratedVCF, multiSampleDir + "/" + multiSampleName + ".SNP_INDEL.recalibrated.vcf.gz"]),
+          dbSnp           = dbSnps,
+          multiSampleName = multiSampleName,
+          multiSampleDir  = multiSampleDir,
+          firstStep       = firstStep,
+          lastStep        = lastStep,
+          gatkPath        = gatkPath,
+          javaOpts        = javaOpts
+      }
+    } # End Multisample QC
 
 
+    if (wfAnnotation == true) {
+      call Annotation.AnnotationWF as AnnotationSubworkflow {
+        input:
+          refFasta        = refFasta,
+          refIndex        = refIndex,
+          refDict         = refDict,
+          recalVCF        = select_first([VQSRSubworkflow.recalibratedVCF, multiSampleDir + "/" + multiSampleName + ".SNP_INDEL.recalibrated.vcf.gz"]),
+          multiSampleName = multiSampleName,
+          multiSampleDir  = multiSampleDir,
+          annovarPath     = annovarPath,
+          humanDB         = humanDB,
+          snpEffPath      = snpEffPath,
+          gatkPath        = gatkPath,
+          javaOpts        = javaOpts,
+          firstStep       = firstStep,
+          lastStep        = lastStep
+      }
+    } # End Annotation
 
-
-
-    #if (wfQC_MultiSample == true) {
-    #  call  as  {
-    #    input:
-    #  }
-    #} # End Multisample QC
   }
-
   ######### END MULTI-SAMPLE #########
 
 
@@ -476,6 +617,29 @@ workflow WholeExomeSequencingGATK4WF {
     File? gatheredVCF                     = JGSubworkflow.gatheredVCF
     File? gatheredVCFIndex                = JGSubworkflow.gatheredVCFIndex
 
+    File? recalIndelsFile                 = VQSRSubworkflow.recalIndelsFile
+    File? recalIndexIndelsFile            = VQSRSubworkflow.recalIndexIndelsFile
+    File? tranchesIndelsFile              = VQSRSubworkflow.tranchesIndelsFile
+    File? rScriptIndels                   = VQSRSubworkflow.rScriptIndels
+    File? plotsIndelsFile                 = VQSRSubworkflow.plotsIndelsFile
 
+    File? recalSnpsFile                   = VQSRSubworkflow.recalSnpsFile
+    File? recalIndexSnpsFile              = VQSRSubworkflow.recalIndexSnpsFile
+    File? tranchesSnpsFile                = VQSRSubworkflow.tranchesSnpsFile
+    File? modelSnpsReport                 = VQSRSubworkflow.modelSnpsReport
+    File? rScriptSnps                     = VQSRSubworkflow.rScriptSnps
+    File? plotsSnpsFile                   = VQSRSubworkflow.plotsSnpsFile
+
+    File? recalibratedVCF                 = VQSRSubworkflow.recalibratedVCF
+    File? recalibratedVCFIndex            = VQSRSubworkflow.recalibratedVCFIndex
+    File? recalibratedVCFMD5              = VQSRSubworkflow.recalibratedVCFMD5
+
+    File? VCMetrics                       = QCMultiSampleSubworkflow.VCMetrics
+
+    File? annovarVCF                      = AnnotationSubworkflow.annovarVCF
+    File? annovarTXT                      = AnnotationSubworkflow.annovarTXT
+    File? snpEffVCF                       = AnnotationSubworkflow.snpEffVCF
+    File? snpEffStats                     = AnnotationSubworkflow.snpEffStats
+    File? varAnnotatorVCF                 = AnnotationSubworkflow.varAnnotatorVCF
   }
 }

@@ -30,6 +30,9 @@ workflow VariantCallingWF {
   File refIndex
   File refDict
 
+  File bedFile
+  File bedFilePadding
+
   File? TSVIntervalsFile
 
   Float? contamination
@@ -46,8 +49,12 @@ workflow VariantCallingWF {
   # PICARD
   #String picardPath
 
+  # Qualimap
+  String qualimapPath
+
   # JAVA OPTS
   String javaOpts
+  String javaMemSize
 
   call utils.ConfigureResultsDirectory as SampleDirectory {input: resultsDir = actualSampleDir}
 
@@ -62,16 +69,16 @@ workflow VariantCallingWF {
 
     call Preprocessing.MarkDuplicates as MergeBamsPerSample {
       input:
-        bams = GetBamsArray.bams,
-        gatkPath = gatkPath,
+        bams              = GetBamsArray.bams,
+        gatkPath          = gatkPath,
         outputBamBasename = dirName + ".ready.deduped",
-        metricsFilename = dirName + ".ready.deduped.metrics.txt",
-        sortOrder = "coordinate",
-        createIndex = "true",
-        javaOpts = javaOpts
+        metricsFilename   = dirName + ".ready.deduped.metrics.txt",
+        sortOrder         = "coordinate",
+        createIndex       = "true",
+        javaOpts          = javaOpts
     }
 
-    call utils.CopyResultsFilesToDir as copyMergedBams {input: resultsDir = SampleDirectory.directory, 
+    call utils.CopyResultsFilesToDir as copyMergedBams {input: resultsDir = SampleDirectory.directory,
       files = [MergeBamsPerSample.markedBam, MergeBamsPerSample.markedBai, MergeBamsPerSample.markedMD5, MergeBamsPerSample.duplicateMetrics]}
 
   } # End step 11
@@ -79,12 +86,16 @@ workflow VariantCallingWF {
   if ((firstStep <= 12) && (12 <= lastStep) && (wfQC_PerSample == true)) {
     call QCPerSample.QualityControlPerSampleWF as QCPerSampleSubworkflow {
       input:
-        refFasta = refFasta,
-        bamFile = MergeBamsPerSample.markedBam,
-        sampleName = dirName,
-        resultsDir = SampleDirectory.directory,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        refFasta       = refFasta,
+        bamFile        = MergeBamsPerSample.markedBam,
+        bedFile        = bedFile,
+        bedFilePadding = bedFilePadding,
+        sampleName     = dirName,
+        resultsDir     = SampleDirectory.directory,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts,
+        qualimapPath   = qualimapPath,
+        javaMemSize    = javaMemSize
     }
   } # End QC and Step 12
 
@@ -95,57 +106,57 @@ workflow VariantCallingWF {
                                       select_first([MergeBamsPerSample.markedBai, actualSampleDir + "/" + dirName + ".ready.deduped.bai"]))
 
     # ######################################################## #
-    # 29. Call variants with GATK-HaplotypeCaller (per-sample) #
+    # 30. Call variants with GATK-HaplotypeCaller (per-sample) #
     # ######################################################## #
 
     #scatter (interval in read_tsv(select_first([TSVIntervalsFile, CreateSequenceGroupingTSV.sequenceGrouping]))) {
     scatter (interval in read_tsv(TSVIntervalsFile)) {
       call HaplotypeCaller {
         input:
-          refFasta = refFasta,
-          refDict = refDict,
-          refIndex = refIndex,
-          inputBam = bam_bai.left,
-          inputBai = bam_bai.right,
-          contamination = contamination,
-          maxAltAlleles = maxAltAlleles,
+          refFasta        = refFasta,
+          refDict         = refDict,
+          refIndex        = refIndex,
+          inputBam        = bam_bai.left,
+          inputBai        = bam_bai.right,
+          contamination   = contamination,
+          maxAltAlleles   = maxAltAlleles,
           intervalPadding = intervalPadding,
-          intervalList = interval,
-          outputBasename = dirName + ".ready.deduped",
-          gatkPath = gatkPath,
-          javaOpts = javaOpts
+          intervalList    = interval,
+          outputBasename  = dirName + ".ready.deduped",
+          gatkPath        = gatkPath,
+          javaOpts        = javaOpts
       }
     }
 
     # ########################################################################### #
-    # 30. Combines multiple variant files into a single variant file (per-sample) #
+    # 31. Combines multiple variant files into a single variant file (per-sample) #
     # ########################################################################### #
 
     call MergeVCFs {
       input:
-        inputVCFs = HaplotypeCaller.gVCF,
+        inputVCFs        = HaplotypeCaller.gVCF,
         inputVCFsIndexes = HaplotypeCaller.gVCFIndex,
-        outputBasename = dirName + ".ready.deduped.merged",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        outputBasename   = dirName + ".ready.deduped.merged",
+        gatkPath         = gatkPath,
+        javaOpts         = javaOpts
     }
 
-    call utils.CopyResultsFilesToDir as copyMergedGVCFs {input: resultsDir = actualSampleDir, 
+    call utils.CopyResultsFilesToDir as copyMergedGVCFs {input: resultsDir = actualSampleDir,
       files = [MergeVCFs.mergedGVCFs, MergeVCFs.mergedGVCFsIndexes]}
 
   } # End step 13
 
   output {
-    File? bamsPerSample = MergeBamsPerSample.markedBam
-    File? baisPerSample = MergeBamsPerSample.markedBai
-    File? md5sPerSample = MergeBamsPerSample.markedMD5
+    File? bamsPerSample       = MergeBamsPerSample.markedBam
+    File? baisPerSample       = MergeBamsPerSample.markedBai
+    File? md5sPerSample       = MergeBamsPerSample.markedMD5
     File? dupMetricsPerSample = MergeBamsPerSample.duplicateMetrics
 
-    File? summary = QCPerSampleSubworkflow.summary
-    Array[File]? multMetrics = QCPerSampleSubworkflow.multMetrics
+    File? summary             = QCPerSampleSubworkflow.summary
+    Array[File]? multMetrics  = QCPerSampleSubworkflow.multMetrics
 
-    File? mergedGVCFs = MergeVCFs.mergedGVCFs
-    File? mergedGVCFsIndexes = MergeVCFs.mergedGVCFsIndexes
+    File? mergedGVCFs         = MergeVCFs.mergedGVCFs
+    File? mergedGVCFsIndexes  = MergeVCFs.mergedGVCFsIndexes
   }
 
 }
@@ -200,7 +211,7 @@ task CreateSequenceGroupingTSV {
   >>>
 
   output {
-    File sequenceGrouping = "sequence_grouping.txt"
+    File sequenceGrouping             = "sequence_grouping.txt"
     File sequenceGroupingWithUnmapped = "sequence_grouping_with_unmapped.txt"
   }
 
@@ -250,7 +261,7 @@ task HaplotypeCaller {
   }
 
   output {
-    File gVCF = "${outputBasename}.g.vcf.gz"
+    File gVCF      = "${outputBasename}.g.vcf.gz"
     File gVCFIndex = "${outputBasename}.g.vcf.gz.tbi"
   }
 
@@ -278,7 +289,7 @@ task MergeVCFs {
   }
 
   output {
-    File mergedGVCFs = "${outputBasename}.g.vcf.gz"
+    File mergedGVCFs        = "${outputBasename}.g.vcf.gz"
     File mergedGVCFsIndexes = "${outputBasename}.g.vcf.gz.tbi"
   }
 

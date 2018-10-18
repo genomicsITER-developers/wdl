@@ -57,19 +57,19 @@ workflow BaseQualityScoreRecalibrationWF {
     scatter (interval in intervalTargetsList) {
       call BaseRecalibrator {
         input:
-          inputBam = inputBam,
-          inputBai = inputBai,
-          recalReportFilename = sampleName + "ready.deduped.parcial_recal_data.csv",
+          inputBam              = inputBam,
+          inputBai              = inputBai,
+          recalReportFilename   = sampleName + "ready.deduped.parcial_recal_data.csv",
           sequenceGroupInterval = interval,
-          dbSnps = dbSnps,
-          dbSnpsIdx = dbSnpsIdx,
-          dbIndelsM1000g = dbIndelsM1000g,
-          dbIndelsM1000gIdx = dbIndelsM1000gIdx,
-          refFasta = refFasta,
-          refDict = refDict,
-          refIndex = refIndex,
-          gatkPath = gatkPath,
-          javaOpts = javaOpts
+          dbSnps                = dbSnps,
+          dbSnpsIdx             = dbSnpsIdx,
+          dbIndelsM1000g        = dbIndelsM1000g,
+          dbIndelsM1000gIdx     = dbIndelsM1000gIdx,
+          refFasta              = refFasta,
+          refDict               = refDict,
+          refIndex              = refIndex,
+          gatkPath              = gatkPath,
+          javaOpts              = javaOpts
       }
     }
 
@@ -79,10 +79,10 @@ workflow BaseQualityScoreRecalibrationWF {
 
     call GatherBaseRecalReports {
       input:
-        baseRecalReports = BaseRecalibrator.recalibrationReport,
+        baseRecalReports      = BaseRecalibrator.recalibrationReport,
         outputReportsFilename = sampleName + "ready.deduped.recal_data.csv",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath              = gatkPath,
+        javaOpts              = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyBqsrReports {input: resultsDir = resultsDir, files = GatherBaseRecalReports.bqsrReports}
@@ -100,16 +100,16 @@ workflow BaseQualityScoreRecalibrationWF {
     scatter (interval in intervalContigsList) { # CAMBIAR ESTE INTERVAL-LIST POR EL QUE CORRESPONDA EN EL CASO DEL APPLYBQSR
       call ApplyBQSR {
         input:
-          inputBam = inputBam,
-          inputBai = inputBai,
-          recalibrationReport = select_first([GatherBaseRecalReports.bqsrReports, resultsDir + "/" + sampleName + "ready.deduped.recal_data.csv"]),
-          outputBasename = sampleName + ".ready.deduped.parcial_recalibrated",
+          inputBam              = inputBam,
+          inputBai              = inputBai,
+          recalibrationReport   = select_first([GatherBaseRecalReports.bqsrReports, resultsDir + "/" + sampleName + "ready.deduped.recal_data.csv"]),
+          outputBasename        = sampleName + ".ready.deduped.parcial_recalibrated",
           sequenceGroupInterval = interval,
-          refFasta = refFasta,
-          refDict = refDict,
-          refIndex = refIndex,
-          gatkPath = gatkPath,
-          javaOpts = javaOpts
+          refFasta              = refFasta,
+          refDict               = refDict,
+          refIndex              = refIndex,
+          gatkPath              = gatkPath,
+          javaOpts              = javaOpts
       }
     }
 
@@ -119,10 +119,10 @@ workflow BaseQualityScoreRecalibrationWF {
 
     call GatherBamRecalibratedFiles {
       input:
-        inputBams = ApplyBQSR.recalibratedBam,
+        inputBams      = ApplyBQSR.recalibratedBam,
         outputBasename = sampleName + ".ready.deduped.recalibrated",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyRecalibratedBam {input: resultsDir = resultsDir, 
@@ -131,9 +131,9 @@ workflow BaseQualityScoreRecalibrationWF {
   }  # End step 10
 
   output {
-    File? recalibrationReports = GatherBaseRecalReports.bqsrReports
-    File? recalibratedBam = GatherBamRecalibratedFiles.recalibratedBam
-    File? recalibratedBamIndex = GatherBamRecalibratedFiles.recalibratedBamIndex
+    File? recalibrationReports    = GatherBaseRecalReports.bqsrReports
+    File? recalibratedBam         = GatherBamRecalibratedFiles.recalibratedBam
+    File? recalibratedBamIndex    = GatherBamRecalibratedFiles.recalibratedBamIndex
     File? recalibratedBamChecksum = GatherBamRecalibratedFiles.recalibratedBamChecksum
   }
 
@@ -244,7 +244,7 @@ task ApplyBQSR {
   }
 
   output {
-    File recalibratedBam = "${outputBasename}.bam"
+    File recalibratedBam         = "${outputBasename}.bam"
     File recalibratedBamChecksum = "${outputBasename}.bam.md5"
   }
 
@@ -273,8 +273,8 @@ task GatherBamRecalibratedFiles {
   }
 
   output {
-    File recalibratedBam = "${outputBasename}.bam"
-    File recalibratedBamIndex = "${outputBasename}.bai"
+    File recalibratedBam         = "${outputBasename}.bam"
+    File recalibratedBamIndex    = "${outputBasename}.bai"
     File recalibratedBamChecksum = "${outputBasename}.bam.md5"
   }
 

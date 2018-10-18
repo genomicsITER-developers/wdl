@@ -20,11 +20,17 @@ workflow QualityControlPerSampleWF {
   File refFasta
   File? bamFile
 
+  File bedFile
+  File bedFilePadding
+
   String sampleName
   String resultsDir
 
   String gatkPath
   String javaOpts
+
+  String qualimapPath
+  String javaMemSize
 
   # ############################################## #
   # 25. Validate merged BAM with GATK (per-sample) #
@@ -32,10 +38,10 @@ workflow QualityControlPerSampleWF {
 
   call QC.ValidateSam as ValidateMergedBam {
     input:
-      bamFile = bamFile,
+      bamFile        = bamFile,
       outputBasename = sampleName + ".ready.deduped.validation.summary",
-      gatkPath = gatkPath,
-      javaOpts = javaOpts
+      gatkPath       = gatkPath,
+      javaOpts       = javaOpts
   }
 
   call utils.CopyResultsFilesToDir as copySummaryMergedBam {input: resultsDir = resultsDir, files = ValidateMergedBam.summary}
@@ -46,17 +52,43 @@ workflow QualityControlPerSampleWF {
 
   call CollectMultipleMetrics {
     input:
-      refFasta = refFasta,
-      bamFile = bamFile,
+      refFasta       = refFasta,
+      bamFile        = bamFile,
       outputBasename = sampleName + ".ready.deduped.multipleqc.metrics",
-      gatkPath = gatkPath,
-      javaOpts = javaOpts
+      gatkPath       = gatkPath,
+      javaOpts       = javaOpts
   }
 
   call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
 
   # ############################################################# #
-  # 27. Compute DepthOfCoverage statistics with GATK (per-sample) #
+  # 27. Qualimap QC of sorted and duplicate-marked BAM (per lane) #
+  # ############################################################# #
+
+  call QC.Qualimap as QualimapZeroPaddingPerLane {
+    input:
+      bamFile      = bamFile,
+      bedFile      = bedFile,
+      javaMemSize  = javaMemSize,
+      resultsDir   = resultsDir,
+      qualimapDir  = "qualimapZeroPadding",
+      outFile      = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-zeropadding.pdf",
+      qualimapPath = qualimapPath
+  }
+
+  call QC.Qualimap as QualimapWithPaddingPerLane {
+    input:
+      bamFile      = bamFile,
+      bedFile      = bedFilePadding,
+      javaMemSize  = javaMemSize,
+      resultsDir   = resultsDir,
+      qualimapDir  = "qualimapWithPadding",
+      outFile      = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-withpadding.pdf",
+      qualimapPath = qualimapPath
+  }
+
+  # ############################################################# #
+  # 28. Compute DepthOfCoverage statistics with GATK (per-sample) #
   # ############################################################# #
 
   #call DepthOfCoverage as depthOfCov {input:refFasta = refFasta,bamFile = bamFile,refSeq = refSeq,outputBasename = sampleName + ".ready.deduped.DephOfCoverage",gatkPath = gatkPath,javaOpts = javaOpts}
@@ -64,7 +96,7 @@ workflow QualityControlPerSampleWF {
   # TO DO: call utils.CopyResultsFilesToDir ...
 
   # ################################################ #
-  # 28. CallableLoci statistics with GATK (per-lane) #
+  # 29. CallableLoci statistics with GATK (per-lane) #
   # ################################################ #
 
   #call CallableLoci {input:refFasta = refFasta,bamFile = bamFile,outputBasename = sampleName + ".ready.deduped",gatkPath = gatkPath,javaOpts = javaOpts}
@@ -72,7 +104,7 @@ workflow QualityControlPerSampleWF {
   # TO DO: call utils.CopyResultsFilesToDir ...
 
   output {
-    File? summary = ValidateMergedBam.summary
+    File? summary            = ValidateMergedBam.summary
     Array[File]? multMetrics = CollectMultipleMetrics.collectedMetrics
 
     # NOT IN GATK4

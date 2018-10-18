@@ -5,9 +5,9 @@
 
 # All steps per-lane per-sample:
 #
-# 38. Build a recalibration model to score variant quality for filtering purposes on INDELs
-# 39. Build a recalibration model to score variant quality for filtering purposes on SNPs
-# 40. Apply the desired level of recalibration
+# 39. Build a recalibration model to score variant quality for filtering purposes on INDELs
+# 40. Build a recalibration model to score variant quality for filtering purposes on SNPs
+# 41. Apply the desired level of recalibration
 #
 
 # IMPORTS
@@ -42,6 +42,8 @@ workflow VariantQualityScoreRecalibrationWF {
   Float indelFilterLevel
   Float snpFilterLevel
 
+  Int snpVQSRDownsampleFactor
+
   Int indelsMaxGaussians
   Int snpsMaxGaussians
 
@@ -58,7 +60,7 @@ workflow VariantQualityScoreRecalibrationWF {
   if ((firstStep <= 15) && (15 <= lastStep)) {
 
     # ######################################################################################### #
-    # 38. Build a recalibration model to score variant quality for filtering purposes on INDELs #
+    # 39. Build a recalibration model to score variant quality for filtering purposes on INDELs #
     # ######################################################################################### #
 
     call IndelsVariantRecalibrator {
@@ -81,16 +83,16 @@ workflow VariantQualityScoreRecalibrationWF {
 
     call utils.CopyResultsFilesToDir as CopyIndelsRecalFiles {
       input:
-        resultsDir = multiSampleDir, 
-        files = [IndelsVariantRecalibrator.recalibrationFile, 
-                 IndelsVariantRecalibrator.recalibrationIndex, 
-                 IndelsVariantRecalibrator.tranchesFile, 
-                 IndelsVariantRecalibrator.rScriptFile, 
+        resultsDir = multiSampleDir,
+        files = [IndelsVariantRecalibrator.recalibrationFile,
+                 IndelsVariantRecalibrator.recalibrationIndex,
+                 IndelsVariantRecalibrator.tranchesFile,
+                 IndelsVariantRecalibrator.rScriptFile,
                  IndelsVariantRecalibrator.plotsFile]
     }
 
     # ####################################################################################### #
-    # 39. Build a recalibration model to score variant quality for filtering purposes on SNPs #
+    # 40. Build a recalibration model to score variant quality for filtering purposes on SNPs #
     # ####################################################################################### #
 
     call SNPsVariantRecalibrator {
@@ -99,7 +101,7 @@ workflow VariantQualityScoreRecalibrationWF {
         gatheredVCFIndex                   = gatheredVCFIndex,
         recalTrancheValues                 = snpRecalibrationTrancheValues,
         recalAnnotationValues              = snpRecalibrationAnnotationValues,
-        #downsampleFactor                   = snpVQSRDownsampleFactor,
+        downsampleFactor                   = snpVQSRDownsampleFactor,
         hapMapResource                     = hapMapResource,
         hapMapResourceIndex                = hapMapResourceIndex,
         omniResource                       = omniResource,
@@ -116,12 +118,12 @@ workflow VariantQualityScoreRecalibrationWF {
 
     call utils.CopyResultsFilesToDir as CopySnpsRecalCreateModelFiles {
       input:
-        resultsDir = multiSampleDir, 
-        files = [SNPsVariantRecalibrator.recalibrationFile, 
+        resultsDir = multiSampleDir,
+        files = [SNPsVariantRecalibrator.recalibrationFile,
                  SNPsVariantRecalibrator.recalibrationIndex,
-                 SNPsVariantRecalibrator.tranchesFile, 
-                 SNPsVariantRecalibrator.modelReportFile, 
-                 SNPsVariantRecalibrator.rScriptFile, 
+                 SNPsVariantRecalibrator.tranchesFile,
+                 SNPsVariantRecalibrator.modelReportFile,
+                 SNPsVariantRecalibrator.rScriptFile,
                  SNPsVariantRecalibrator.plotsFile]
     }
   } # End step 15
@@ -130,7 +132,7 @@ workflow VariantQualityScoreRecalibrationWF {
   if ((firstStep <= 16) && (16 <= lastStep)) {
 
     # ############################################ #
-    # 40. Apply the desired level of recalibration #
+    # 41. Apply the desired level of recalibration #
     # ############################################ #
 
     call ApplyRecalibration {

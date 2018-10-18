@@ -1,7 +1,6 @@
 {
    "##_1": "REFERENCE GENOME DATA",
    "##_NOTE_1": "Set '...' to your own path",
-
    "WholeExomeSequencingGATK4WF.refBaseDir":                      ".../hg38/",
    "WholeExomeSequencingGATK4WF.refBaseName":                     "Homo_sapiens_assembly38",
 
@@ -19,18 +18,18 @@
    "WholeExomeSequencingGATK4WF.dbSnpsIdx":                       ".../hg38/dbs/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi",
    "WholeExomeSequencingGATK4WF.dbIndelsM1000g":                  ".../hg38/dbs/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
    "WholeExomeSequencingGATK4WF.dbIndelsM1000gIdx":               ".../hg38/dbs/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
-   "WholeExomeSequencingGATK4WF.hapMapResource":                  ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.hapMapResourceIndex":             ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.omniResource":                    ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.omniResourceIndex":               ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.axiomPolyResource":               ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.axiomPolyResourceIndex":          ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.oneThousandGenomesResource":      ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.oneThousandGenomesResourceIndex": ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.millsResource":                   ".../hg38/dbs/",
-   "WholeExomeSequencingGATK4WF.millsResourceIndex":              ".../hg38/dbs/",
+   "WholeExomeSequencingGATK4WF.hapMapResource":                  ".../hg38/dbs/hapmap_3.3.hg38.vcf.gz",
+   "WholeExomeSequencingGATK4WF.hapMapResourceIndex":             ".../hg38/dbs/hapmap_3.3.hg38.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.omniResource":                    ".../hg38/dbs/1000G_omni2.5.hg38.vcf.gz",
+   "WholeExomeSequencingGATK4WF.omniResourceIndex":               ".../hg38/dbs/1000G_omni2.5.hg38.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.axiomPolyResource":               ".../hg38/dbs/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz",
+   "WholeExomeSequencingGATK4WF.axiomPolyResourceIndex":          ".../hg38/dbs/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.oneThousandGenomesResource":      ".../hg38/dbs/1000G_phase1.snps.high_confidence.hg38.vcf.gz",
+   "WholeExomeSequencingGATK4WF.oneThousandGenomesResourceIndex": ".../hg38/dbs/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.millsResource":                   ".../hg38/dbs/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
+   "WholeExomeSequencingGATK4WF.millsResourceIndex":              ".../hg38/dbs/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
 
-   "WholeGenomeSequencingGATK4WF.useGenomicsDB": true,
+   "WholeExomeSequencingGATK4WF.useGenomicsDB": true,
 
    "##_ADDITIONAL_PARAMS": "tranches, annotations, filter levels...",
    "WholeExomeSequencingGATK4WF.snpRecalibrationTrancheValues":      ["100.0", "99.95", "99.9", "99.8", "99.6", "99.5", "99.4", "99.3", "99.0", "98.0", "97.0", "90.0"],
@@ -72,8 +71,9 @@
    "##_4": "BWA",
    "##_NOTE_4": "Set '...' to BWA path and the -t value to your own configuration.",
    "WholeExomeSequencingGATK4WF.bwaPath": "bwa",
+   "WholeExomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",
+
    "WholeExomeSequencingGATK4WF.bwaMemCommand_pairedSplit": "mem -K 100000000 -v 3 -t 2 -Y $bashRefFasta $bashReadFastq1 $bashReadFastq2",
-   "WholeExomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",   
 
 
    "##_5": "SAMTOOLS",
@@ -99,32 +99,44 @@
    "##_9": "QUALIMAP",
    "##_NOTE_9": "Set '...' to Qualimap path.",
    "WholeExomeSequencingGATK4WF.qualimapPath": ".../qualimap_v2.2.1/qualimap",
-   "WholeExomeSequencingGATK4WF.javaMemSize": "8G",
+   "WholeExomeSequencingGATK4WF.javaMemSize":  "8G",
 
 
-   "##_10": "RESULTS DIR",
+   "##_10": "ANNOVAR",
+   "##_NOTE_10": "Set '...' to Annovar path.",
+   "WholeExomeSequencingGATK4WF.annovarPath": "?????",
+   "WholeExomeSequencingGATK4WF.humanDB": "?????",
+
+
+   "##_11": "SNPEFF",
+   "##_NOTE_10": "Set '...' to SnpEff path.",
+   "WholeExomeSequencingGATK4WF.snpEffPath": "?????",
+
+
+   "##_12": "RESULTS DIR",
    "##_NOTE_10": "Set '...' to results path.",
    "WholeExomeSequencingGATK4WF.resultsDir": ".../WESGermlineSNPsIndels/results",
 
 
-   "##_11": "CONFIGURATION PARAMETERS",
-   "WholeExomeSequencingGATK4WF.wfPerSamplePerLane": true,
-   "WholeExomeSequencingGATK4WF.wfPreprocess": true,
+   "##_13": "CONFIGURATION PARAMETERS",
+   "WholeExomeSequencingGATK4WF.wfPerSamplePerLane":    true,
+   "WholeExomeSequencingGATK4WF.wfPreprocess":          true,
    "WholeExomeSequencingGATK4WF.wfQC_PerSamplePerLane": true,
-   "WholeExomeSequencingGATK4WF.wfBQSR": true,
+   "WholeExomeSequencingGATK4WF.wfBQSR":                true,
 
-   "WholeExomeSequencingGATK4WF.wfPerSample": true,
-   "WholeExomeSequencingGATK4WF.wfVariantCalling": true,
-   "WholeExomeSequencingGATK4WF.wfQC_PerSample": true,
+   "WholeExomeSequencingGATK4WF.wfPerSample":           true,
+   "WholeExomeSequencingGATK4WF.wfVariantCalling":      true,
+   "WholeExomeSequencingGATK4WF.wfQC_PerSample":        true,
 
-   "WholeExomeSequencingGATK4WF.wfMultiSample": true,
-   "WholeExomeSequencingGATK4WF.wfJointGenotyping": true,
-   "WholeExomeSequencingGATK4WF.wfVQSR": true,
-   "WholeExomeSequencingGATK4WF.wfQC_MultiSample": true,
+   "WholeExomeSequencingGATK4WF.wfMultiSample":         true,
+   "WholeExomeSequencingGATK4WF.wfJointGenotyping":     true,
+   "WholeExomeSequencingGATK4WF.wfVQSR":                true,
+   "WholeExomeSequencingGATK4WF.wfQC_MultiSample":      true,
+   "WholeExomeSequencingGATK4WF.wfAnnotation":          true,
 
-   "WholeExomeSequencingGATK4WF.firstStep": 0,
-   "WholeExomeSequencingGATK4WF.lastStep":  100,
+   "WholeExomeSequencingGATK4WF.firstStep":             0,
+   "WholeExomeSequencingGATK4WF.lastStep":              100,
 
-   "##_12": "Java Opts: Select Xms16g for 30GB-RAM and 60GB-RAM nodes. Select Xmx28g for 30GB-RAM or Xmx56 for 60GB-RAM nodes",
+   "##_14": "Java Opts: Select Xms16g for 30GB-RAM and 60GB-RAM nodes. Select Xmx28g for 30GB-RAM or Xmx56 for 60GB-RAM nodes",
    "WholeExomeSequencingGATK4WF.javaOpts": "-Xmx8g -Xms8g"
 }

@@ -98,7 +98,7 @@ workflow JointGenotypingWF {
     }
   }
 
-  
+
   # ONLY FOR COMBINEGVCFS
   if (useGenomicsDB == false) {
     call getGVcfFiles as getGVcfs {input: sampleNameMap = read_tsv(sampleNameMap)}

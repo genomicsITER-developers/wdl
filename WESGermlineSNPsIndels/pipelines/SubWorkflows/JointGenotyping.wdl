@@ -5,13 +5,13 @@
 
 # All steps per-lane per-sample:
 #
-# 31. ...
-# 32. ...
-# 33. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file
-# 34. Combine per-sample gVCF files produced by HaplotypeCaller into a multi-sample gVCF file
-# 35. Perform joint genotyping on gVCF files produced by HaplotypeCaller
-# 36. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file
-# 37. Merge all VCFs from the previous scatter
+# 32. Import VCFs into GenomicsDB before joint genotyping
+# 33. Perform joint genotyping on gVCF files produced by HaplotypeCaller using GenomicsDB
+# 34. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file
+# 35. Combine per-sample gVCF files produced by HaplotypeCaller into a multi-sample gVCF file
+# 36. Perform joint genotyping on gVCF files produced by HaplotypeCaller
+# 37. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file
+# 38. Merge all VCFs from the previous scatter
 #
 
 # IMPORTS
@@ -36,7 +36,7 @@ workflow JointGenotypingWF {
   Boolean useGenomicsDB
 
   # Levels, thresholds, ...
-  # ExcessHet is a phred-scaled p-value. We want a cutoff of anything more extreme 
+  # ExcessHet is a phred-scaled p-value. We want a cutoff of anything more extreme
   # than a z-score of -4.5 which is a p-value of 3.4e-06, which phred-scaled is 54.69
   Float excessHetThreshold = 54.69
 
@@ -55,31 +55,51 @@ workflow JointGenotypingWF {
 
       scatter (interval in intervalList) { # CHANGE THIS INTERVALLIST FILE
 
-        # ########################################################################################### #
-        # 31.  #
-        # ########################################################################################### #
+        # ####################################################### #
+        # 32. Import VCFs into GenomicsDB before joint genotyping #
+        # ####################################################### #
 
-        #call ImportGVCFs {}
+        call ImportGVCFs {
+          input:
+            sampleNameMap    = sampleNameMap,
+            interval         = interval,
+            workspaceDirName = "genomicsdb",
+            batchSize        = 50,
+            gatkPath         = gatkPath,
+            javaOpts         = javaOpts
+        }
 
-        # ########################################################################################### #
-        # 32.  #
-        # ########################################################################################### #
+        # ####################################################################################### #
+        # 33. Perform joint genotyping on gVCF files produced by HaplotypeCaller using GenomicsDB #
+        # ####################################################################################### #
 
-        #call GenotypeGVCFsWithGenomicsDB {}
+        call GenotypeGVCFsWithGenomicsDB {
+          input:
+            workspaceTar   = ImportGVCFs.outputGenomicsDB,
+            interval       = interval,
+            outputBasename = multiSampleName + ".cohort.genotyped",
+            refFasta       = refFasta,
+            refIndex       = refIndex,
+            refDict        = refDict,
+            dbSnpsVcf      = dbSnpsVcf,
+            dbSnpsVcfIdx   = dbSnpsVcfIdx,
+            gatkPath       = gatkPath,
+            javaOpts       = javaOpts
+        }
 
         # ######################################################################################## #
-        # 33. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file #
+        # 34. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file #
         # ######################################################################################## #
 
-        #call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithGenomicsDB {
-        #  input:
-        #    vcf = GenotypeGVCFsWithGenomicsDB.outputVCF,
-        #    vcfIndex = GenotypeGVCFsWithGenomicsDB.outputVCFIndex,
-        #    excessHetThreshold = excessHetThreshold,
-        #    outputBasename = multiSampleName + ".cohort.genotyped.filtered",
-        #    gatkPath = gatkPath,
-        #    javaOpts = javaOpts
-        #}
+        call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithGenomicsDB {
+          input:
+            vcf = GenotypeGVCFsWithGenomicsDB.outputVCF,
+            vcfIndex = GenotypeGVCFsWithGenomicsDB.outputVCFIndex,
+            excessHetThreshold = excessHetThreshold,
+            outputBasename = multiSampleName + ".cohort.genotyped.filtered",
+            gatkPath = gatkPath,
+            javaOpts = javaOpts
+        }
       }
     }
 
@@ -93,7 +113,7 @@ workflow JointGenotypingWF {
       scatter (interval in intervalList) { # CHANGE THIS INTERVALLIST FILE
 
         # ########################################################################################### #
-        # 34. Combine per-sample gVCF files produced by HaplotypeCaller into a multi-sample gVCF file #
+        # 35. Combine per-sample gVCF files produced by HaplotypeCaller into a multi-sample gVCF file #
         # ########################################################################################### #
 
         call CombineGVCFs {
@@ -110,7 +130,7 @@ workflow JointGenotypingWF {
         }
 
         # ###################################################################### #
-        # 35. Perform joint genotyping on gVCF files produced by HaplotypeCaller #
+        # 36. Perform joint genotyping on gVCF files produced by HaplotypeCaller #
         # ###################################################################### #
 
         call GenotypeGVCFsWithCohortGVCF {
@@ -129,7 +149,7 @@ workflow JointGenotypingWF {
         }
 
         # ######################################################################################## #
-        # 36. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file #
+        # 37. Filter variant calls and removes all genotype information from a VCF/VCF.gz/BCF file #
         # ######################################################################################## #
 
         call HardFilterAndMakeSitesOnlyVcf as HardFilterAndMakeSitesOnlyVcfWithCohortGVCF {
@@ -145,7 +165,7 @@ workflow JointGenotypingWF {
     }
 
     # ############################################ #
-    # 37. Merge all VCFs from the previous scatter #
+    # 38. Merge all VCFs from the previous scatter #
     # ############################################ #
 
     call GatherVCFs as SitesOnlyGatherVcf {
@@ -195,6 +215,91 @@ task getGVcfFiles {
 # -----------------------------------------------------
 # - Tasks for Joint Genotyping using GenomicsDBImport -
 # -----------------------------------------------------
+
+task ImportGVCFs {
+
+  File sampleNameMap
+
+  Array[String] interval
+
+  String workspaceDirName
+  Int batchSize
+
+  String gatkPath
+
+  String javaOpts
+
+  # In GATK 4.0.2.1 version, GenomicsDBImport allows ONLY one interval
+  command <<<
+    set -e
+
+    rm -rf ${workspaceDirName}
+
+    ${gatkPath} --java-options "${javaOpts}" GenomicsDBImport \
+      --genomicsdb-workspace-path ${workspaceDirName} \
+      --batch-size ${batchSize} \
+      -L ${sep=" -L " interval} \
+      --sample-name-map ${sampleNameMap} \
+      --reader-threads 5 \
+      -ip 500
+
+    tar -cf ${workspaceDirName}.tar ${workspaceDirName}
+  >>>
+
+  output {
+    File outputGenomicsDB = "${workspaceDirName}.tar"
+  }
+
+  meta {
+    taskDescription: "Import VCFs from multiple samples to GenomicsDB (multi-sample)."
+  }
+}
+
+
+task GenotypeGVCFsWithGenomicsDB {
+
+  File workspaceTar
+
+  Array[String] interval
+
+  String outputBasename
+
+  File refFasta
+  File refDict
+  File refIndex
+  File dbSnpsVcf
+  File dbSnpsVcfIdx
+
+  String gatkPath
+
+  String javaOpts
+
+  command <<<
+    set -e
+
+    tar -xf ${workspaceTar}
+    WORKSPACE=$( basename ${workspaceTar} .tar)
+
+    ${gatkPath} --java-options "${javaOpts}" GenotypeGVCFs \
+      -R ${refFasta} \
+      -O ${outputBasename}.vcf.gz \
+      -D ${dbSnpsVcf} \
+      -G StandardAnnotation \
+      --only-output-calls-starting-in-intervals true \
+      -new-qual true \
+      -V gendb://$WORKSPACE \
+      -L ${sep=" -L " interval}
+  >>>
+
+  output {
+    File outputVCF = "${outputBasename}.vcf.gz"
+    File outputVCFIndex = "${outputBasename}.vcf.gz.tbi"
+  }
+
+  meta {
+    taskDescription: "Perform joint genotyping after GenomicsDBImport on one or more samples pre-called with HaplotypeCaller (multi-sample)."
+  }
+}
 
 
 
@@ -346,6 +451,11 @@ task GatherVCFs {
 
     tabix ${outputBasename}.vcf.gz
   >>>
+
+  # --gather-type:
+  #    * BLOCK: Faster but onlyworks when you have both bgzipped inputs and outputs.
+  #    * CONVENTIONAL: Much slower but should work on all vcf files.
+  #    * AUTOMATIC: Chooses BLOCK if possible and CONVENTIONAL otherwise.
 
   output {
     File gatheredVCF      = "${outputBasename}.vcf.gz"

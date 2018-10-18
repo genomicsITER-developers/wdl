@@ -56,10 +56,10 @@ workflow QualityControlWF {
 
     call ValidateSam as ValidateReadyBam {
       input:
-        bamFile = bamFile,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.summary",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copySummaryFile {input: resultsDir = resultsDir, files = ValidateReadyBam.summary}
@@ -75,23 +75,23 @@ workflow QualityControlWF {
 
     call Qualimap as QualimapZeroPadding {
       input:
-        bamFile = bamFile,
-        bedFile = bedFile,
-        javaMemSize = javaMemSize,
-        resultsDir = resultsDir,
-        qualimapDir = "qualimapZeroPadding",
-        outFile = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-zeropadding.pdf",
+        bamFile      = bamFile,
+        bedFile      = bedFile,
+        javaMemSize  = javaMemSize,
+        resultsDir   = resultsDir,
+        qualimapDir  = "qualimapZeroPadding",
+        outFile      = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-zeropadding.pdf",
         qualimapPath = qualimapPath
     }
 
     call Qualimap as QualimapWithPadding {
       input:
-        bamFile = bamFile,
-        bedFile = bedFilePadding,
-        javaMemSize = javaMemSize,
-        resultsDir = resultsDir,
-        qualimapDir = "qualimapWithPadding",
-        outFile = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-withpadding.pdf",
+        bamFile      = bamFile,
+        bedFile      = bedFilePadding,
+        javaMemSize  = javaMemSize,
+        resultsDir   = resultsDir,
+        qualimapDir  = "qualimapWithPadding",
+        outFile      = sampleName + ".aligned.merged.deduped.sorted.fixed.qualimapqc-withpadding.pdf",
         qualimapPath = qualimapPath
     }
 
@@ -106,12 +106,12 @@ workflow QualityControlWF {
 
     call CollectMultipleMetrics {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
-        intervalList = intervalList,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
+        intervalList   = intervalList,
         outputBasename = sampleName + ".clean.deduped.sorted.fixed.bam.qcmetrics",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
@@ -123,40 +123,40 @@ workflow QualityControlWF {
     # Collect Raw metrics:
     call CollectRawWgsMetrics {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_raw",
-        minBQ = 3,
-        minMQ = 0,
-        intervalList = intervalList,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        minBQ          = 3,
+        minMQ          = 0,
+        intervalList   = intervalList,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     # Collect metrics:
     call CollectWgsMetrics {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_filtered",
-        minBQ = 20,
-        minMQ = 20,
-        intervalList = intervalList,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        minBQ          = 20,
+        minMQ          = 20,
+        intervalList   = intervalList,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     # Collect metrics ONLY in non zero coverage retions:
     call CollectWgsMetricsWithNonZeroCoverage {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".clean.deduped.sorted.fixed.wes_metrics_nonzero_coverage",
-        minBQ = 2,
-        minMQ = 20,
-        intervalList = intervalList,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        minBQ          = 2,
+        minMQ          = 20,
+        intervalList   = intervalList,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyCollectMetrics {input: resultsDir = resultsDir, 
@@ -168,13 +168,13 @@ workflow QualityControlWF {
 
     call CollectHsMetrics {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.HsMetrics",
-        baits = baits,
-        targets = targets,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        baits          = baits,
+        targets        = targets,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyHsMetrics {input: resultsDir = resultsDir, files = [CollectHsMetrics.hsMetrics, CollectHsMetrics.perTargetCoverage]}
@@ -185,12 +185,12 @@ workflow QualityControlWF {
 
     call CollectOxoGMetrics {
       input:
-        refFasta = refFasta,
-        bamFile = bamFile,
+        refFasta       = refFasta,
+        bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.oxoG_metrics",
-        intervalList = intervalList,
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        intervalList   = intervalList,
+        gatkPath       = gatkPath,
+        javaOpts       = javaOpts
     }
 
     call utils.CopyResultsFilesToDir as copyOxoGMetrics {input: resultsDir = resultsDir, files = CollectOxoGMetrics.oxoGMetrics}
@@ -242,15 +242,15 @@ workflow QualityControlWF {
   # TO DO: call utils.CopyResultsFilesToDir ...
 
   output {
-    File? summary = ValidateReadyBam.summary
-    Array[File]? multMetrics = CollectMultipleMetrics.collectedMetrics
-    File? rawMetrics = CollectRawWgsMetrics.collectedMetrics
-    File? wgsMetrics = CollectWgsMetrics.collectedMetrics
-    File? wgsNonZeroMetrics = CollectWgsMetricsWithNonZeroCoverage.collectedMetrics
+    File? summary              = ValidateReadyBam.summary
+    Array[File]? multMetrics   = CollectMultipleMetrics.collectedMetrics
+    File? rawMetrics           = CollectRawWgsMetrics.collectedMetrics
+    File? wgsMetrics           = CollectWgsMetrics.collectedMetrics
+    File? wgsNonZeroMetrics    = CollectWgsMetricsWithNonZeroCoverage.collectedMetrics
     File? wgsNonZeroMetricsPDF = CollectWgsMetricsWithNonZeroCoverage.collectedMetricsPDF
-    File? hsMetrics = CollectHsMetrics.hsMetrics
-    File? hsPerTargetMetrics = CollectHsMetrics.perTargetCoverage
-    File? oxoGMetrics = CollectOxoGMetrics.oxoGMetrics
+    File? hsMetrics            = CollectHsMetrics.hsMetrics
+    File? hsPerTargetMetrics   = CollectHsMetrics.perTargetCoverage
+    File? oxoGMetrics          = CollectOxoGMetrics.oxoGMetrics
 
     # NOT IN GATK4
     # File summaryCoverage = depthOfCov.summaryCoverage
@@ -264,7 +264,7 @@ workflow QualityControlWF {
 
 
 task ValidateSam {
-  
+
   File? bamFile
 
   String outputBasename
@@ -518,7 +518,7 @@ task CollectWgsMetricsWithNonZeroCoverage {
   }
 
   output {
-    File collectedMetrics = "${outputBasename}"
+    File collectedMetrics    = "${outputBasename}"
     File collectedMetricsPDF = "${outputBasename}.pdf"
   }
 
@@ -548,7 +548,7 @@ task CallableLoci {
   }
 
   output {
-    File callableLociBed = "${outputBasename}.callable_loci.bed"
+    File callableLociBed     = "${outputBasename}.callable_loci.bed"
     File callableLociSummary = "${outputBasename}.callable_loci_table.txt"
   }
 
@@ -628,7 +628,7 @@ task DiagnoseTargets {
   }
 
   output {
-    File diagnoseVCF = "${outputBasename}"
+    File diagnoseVCF         = "${outputBasename}"
     File missingIntervalList = "${missingIntervals}"
   }
 
@@ -699,7 +699,7 @@ task CollectHsMetrics {
   }
 
   output {
-    File hsMetrics = "${outputBasename}"
+    File hsMetrics         = "${outputBasename}"
     File perTargetCoverage = "${outputBasename}.PerTargetCoverage"
   }
 
