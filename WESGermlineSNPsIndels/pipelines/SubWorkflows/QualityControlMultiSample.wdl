@@ -28,6 +28,7 @@ workflow QualityControlMultiSampleWF {
 
   String gatkPath
   String javaOpts
+  String gatkBaseCommand = gatkPath + ' --java-options ' + '"' + javaOpts + '"' + ' '
 
   # Step 17 - Collect VC metrics
   if ((firstStep <= 17) && (17 <= lastStep)) {
@@ -38,13 +39,12 @@ workflow QualityControlMultiSampleWF {
 
     call CollectVariantCallingMetrics {
       input:
-        refDict = refDict,
-        recalVCF = recalVCF,
-        dbSnp = dbSnp,
-        threads = 1,
-        outputBasename = multiSampleName + ".SNP_INDEL.recalibrated.metrics",
-        gatkPath = gatkPath,
-        javaOpts = javaOpts
+        refDict         = refDict,
+        recalVCF        = recalVCF,
+        dbSnp           = dbSnp,
+        threads         = 1,
+        outputBasename  = multiSampleName + ".SNP_INDEL.recalibrated.metrics",
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyVCMetrics {input: resultsDir = multiSampleDir, files = CollectVariantCallingMetrics.collectedMetrics}
@@ -79,11 +79,10 @@ task CollectVariantCallingMetrics {
 
   String outputBasename
 
-  String gatkPath
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-opts "${javaOpts}" CollectVariantCallingMetrics \
+    ${gatkBaseCommand} CollectVariantCallingMetrics \
       --INPUT ${recalVCF} \
       --DBSNP ${dbSnp} \
       --SEQUENCE_DICTIONARY ${refDict} \

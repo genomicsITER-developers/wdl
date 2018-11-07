@@ -45,15 +45,14 @@ workflow VariantCallingWF {
 
   # GATK
   String gatkPath
+  String javaOpts
+  String gatkBaseCommand = gatkPath + ' --java-options ' + '"' + javaOpts + '"' + ' '
 
   # PICARD
   #String picardPath
 
   # Qualimap
   String qualimapPath
-
-  # JAVA OPTS
-  String javaOpts
   String javaMemSize
 
   call utils.ConfigureResultsDirectory as SampleDirectory {input: resultsDir = actualSampleDir}
@@ -70,12 +69,11 @@ workflow VariantCallingWF {
     call Preprocessing.MarkDuplicates as MergeBamsPerSample {
       input:
         bams              = GetBamsArray.bams,
-        gatkPath          = gatkPath,
         outputBamBasename = dirName + ".ready.deduped",
         metricsFilename   = dirName + ".ready.deduped.metrics.txt",
         sortOrder         = "coordinate",
         createIndex       = "true",
-        javaOpts          = javaOpts
+        gatkBaseCommand   = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyMergedBams {input: resultsDir = SampleDirectory.directory,
@@ -86,23 +84,22 @@ workflow VariantCallingWF {
   if ((firstStep <= 12) && (12 <= lastStep) && (wfQC_PerSample == true)) {
     call QCPerSample.QualityControlPerSampleWF as QCPerSampleSubworkflow {
       input:
-        refFasta       = refFasta,
-        bamFile        = MergeBamsPerSample.markedBam,
-        bedFile        = bedFile,
-        bedFilePadding = bedFilePadding,
-        sampleName     = dirName,
-        resultsDir     = SampleDirectory.directory,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts,
-        qualimapPath   = qualimapPath,
-        javaMemSize    = javaMemSize
+        refFasta        = refFasta,
+        bamFile         = MergeBamsPerSample.markedBam,
+        bedFile         = bedFile,
+        bedFilePadding  = bedFilePadding,
+        sampleName      = dirName,
+        resultsDir      = SampleDirectory.directory,
+        gatkBaseCommand = gatkBaseCommand,
+        qualimapPath    = qualimapPath,
+        javaMemSize     = javaMemSize
     }
   } # End QC and Step 12
 
   # Step 13 - Haplotype Caller and merge the results
   if ((firstStep <= 13) && (13 <= lastStep)) {
 
-    Pair[String?, String?] bam_bai = (select_first([MergeBamsPerSample.markedBam, actualSampleDir + "/" + dirName + ".ready.deduped.bam"]), 
+    Pair[String?, String?] bam_bai = (select_first([MergeBamsPerSample.markedBam, actualSampleDir + "/" + dirName + ".ready.deduped.bam"]),
                                       select_first([MergeBamsPerSample.markedBai, actualSampleDir + "/" + dirName + ".ready.deduped.bai"]))
 
     # ######################################################## #
@@ -137,8 +134,7 @@ workflow VariantCallingWF {
         inputVCFs        = HaplotypeCaller.gVCF,
         inputVCFsIndexes = HaplotypeCaller.gVCFIndex,
         outputBasename   = dirName + ".ready.deduped.merged",
-        gatkPath         = gatkPath,
-        javaOpts         = javaOpts
+        gatkBaseCommand  = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyMergedGVCFs {input: resultsDir = actualSampleDir,
@@ -239,7 +235,6 @@ task HaplotypeCaller {
   String outputBasename
 
   String gatkPath
-
   String javaOpts
 
   command {
@@ -278,12 +273,10 @@ task MergeVCFs {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" MergeVcfs \
+    ${gatkBaseCommand} MergeVcfs \
       -I ${sep=' -I ' inputVCFs} \
       -O ${outputBasename}.g.vcf.gz
   }

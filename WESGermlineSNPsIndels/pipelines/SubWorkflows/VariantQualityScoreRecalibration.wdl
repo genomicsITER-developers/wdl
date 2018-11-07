@@ -55,6 +55,7 @@ workflow VariantQualityScoreRecalibrationWF {
 
   String gatkPath
   String javaOpts
+  String gatkBaseCommand = gatkPath + ' --java-options ' + '"' + javaOpts + '"' + ' '
 
   # Step 15 - VQSR for indels and snps
   if ((firstStep <= 15) && (15 <= lastStep)) {
@@ -65,20 +66,19 @@ workflow VariantQualityScoreRecalibrationWF {
 
     call IndelsVariantRecalibrator {
       input:
-        gatheredVCF               = gatheredVCF,
-        gatheredVCFIndex          = gatheredVCFIndex,
-        recalTrancheValues        = indelRecalibrationTrancheValues,
-        recalAnnotationValues     = indelRecalibrationAnnotationValues,
-        millsResource             = millsResource,
-        millsResourceIndex        = millsResourceIndex,
-        axiomPolyResource         = axiomPolyResource,
-        axiomPolyResourceIndex    = axiomPolyResourceIndex,
-        dbSnps                    = dbSnps,
-        dbSnpsIdx                 = dbSnpsIdx,
-        indelsMaxGaussians        = indelsMaxGaussians,
-        outputBasename            = multiSampleName + ".recalibrate_indels",
-        gatkPath                  = gatkPath,
-        javaOpts                  = javaOpts
+        gatheredVCF            = gatheredVCF,
+        gatheredVCFIndex       = gatheredVCFIndex,
+        recalTrancheValues     = indelRecalibrationTrancheValues,
+        recalAnnotationValues  = indelRecalibrationAnnotationValues,
+        millsResource          = millsResource,
+        millsResourceIndex     = millsResourceIndex,
+        axiomPolyResource      = axiomPolyResource,
+        axiomPolyResourceIndex = axiomPolyResourceIndex,
+        dbSnps                 = dbSnps,
+        dbSnpsIdx              = dbSnpsIdx,
+        indelsMaxGaussians     = indelsMaxGaussians,
+        outputBasename         = multiSampleName + ".recalibrate_indels",
+        gatkBaseCommand        = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as CopyIndelsRecalFiles {
@@ -97,23 +97,22 @@ workflow VariantQualityScoreRecalibrationWF {
 
     call SNPsVariantRecalibrator {
       input:
-        gatheredVCF                        = gatheredVCF,
-        gatheredVCFIndex                   = gatheredVCFIndex,
-        recalTrancheValues                 = snpRecalibrationTrancheValues,
-        recalAnnotationValues              = snpRecalibrationAnnotationValues,
-        downsampleFactor                   = snpVQSRDownsampleFactor,
-        hapMapResource                     = hapMapResource,
-        hapMapResourceIndex                = hapMapResourceIndex,
-        omniResource                       = omniResource,
-        omniResourceIndex                  = omniResourceIndex,
-        oneThousandGenomesResource         = oneThousandGenomesResource,
-        oneThousandGenomesResourceIndex    = oneThousandGenomesResourceIndex,
-        dbSnps                             = dbSnps,
-        dbSnpsIdx                          = dbSnpsIdx,
-        snpsMaxGaussians                   = snpsMaxGaussians,
-        outputBasename                     = multiSampleName + ".recalibrate_snps",
-        gatkPath                           = gatkPath,
-        javaOpts                           = javaOpts
+        gatheredVCF                     = gatheredVCF,
+        gatheredVCFIndex                = gatheredVCFIndex,
+        recalTrancheValues              = snpRecalibrationTrancheValues,
+        recalAnnotationValues           = snpRecalibrationAnnotationValues,
+        downsampleFactor                = snpVQSRDownsampleFactor,
+        hapMapResource                  = hapMapResource,
+        hapMapResourceIndex             = hapMapResourceIndex,
+        omniResource                    = omniResource,
+        omniResourceIndex               = omniResourceIndex,
+        oneThousandGenomesResource      = oneThousandGenomesResource,
+        oneThousandGenomesResourceIndex = oneThousandGenomesResourceIndex,
+        dbSnps                          = dbSnps,
+        dbSnpsIdx                       = dbSnpsIdx,
+        snpsMaxGaussians                = snpsMaxGaussians,
+        outputBasename                  = multiSampleName + ".recalibrate_snps",
+        gatkBaseCommand                 = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as CopySnpsRecalCreateModelFiles {
@@ -151,8 +150,7 @@ workflow VariantQualityScoreRecalibrationWF {
         indelFilterLevel = indelFilterLevel,
         snpFilterLevel   = snpFilterLevel,
         outputBasename   = multiSampleName + ".SNP_INDEL.recalibrated",
-        gatkPath         = gatkPath,
-        javaOpts         = javaOpts
+        gatkBaseCommand  = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as CopyRecalibratedVCFs {
@@ -202,12 +200,10 @@ task IndelsVariantRecalibrator {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" VariantRecalibrator \
+    ${gatkBaseCommand} VariantRecalibrator \
       -V ${gatheredVCF} \
       -O ${outputBasename}.recal \
       --tranches-file ${outputBasename}.tranches \
@@ -259,13 +255,11 @@ task SNPsVariantRecalibrator {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   # En el wdl de gatk tienen -Xmx100g y -Xms100g
   command {
-    ${gatkPath} --java-options "${javaOpts}" VariantRecalibrator \
+    ${gatkBaseCommand} VariantRecalibrator \
       -V ${gatheredVCF} \
       -O ${outputBasename}.recal \
       --tranches-file ${outputBasename}.tranches \
@@ -321,14 +315,12 @@ task ApplyRecalibration {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
     set -e
 
-    ${gatkPath} --java-options "${javaOpts}" ApplyVQSR \
+    ${gatkBaseCommand} ApplyVQSR \
       -R ${refFasta} \
       -O tmp.INDEL.recalibrated.vcf \
       -V ${inputVCF} \
@@ -339,7 +331,7 @@ task ApplyRecalibration {
       --create-output-variant-md5 true \
       -mode INDEL
 
-    ${gatkPath} --java-options "${javaOpts}" ApplyVQSR \
+    ${gatkBaseCommand} ApplyVQSR \
       -R ${refFasta} \
       -O  ${outputBasename}.vcf.gz \
       -V tmp.INDEL.recalibrated.vcf \

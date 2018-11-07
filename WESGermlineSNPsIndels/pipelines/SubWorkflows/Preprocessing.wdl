@@ -47,7 +47,7 @@ workflow PreprocessingWF {
   File readsFile2   # pair[2]
 
   # GATK
-  String gatkPath
+  String gatkBaseCommand
 
   # BWA
   String bwaPath
@@ -56,8 +56,6 @@ workflow PreprocessingWF {
   # RESULTS DIR
   String resultsDir
 
-  # Java Opts
-  String javaOpts
 
   # PREPROCESSING WORKFLOW
 
@@ -78,9 +76,8 @@ workflow PreprocessingWF {
         platformUnit     = platformUnit,
         platform         = platform,
         sequencingCenter = sequencingCenter,
-        gatkPath         = gatkPath,
-        outputBasename   = sampleName + ".unmapped",
-        javaOpts         = javaOpts
+        gatkBaseCommand  = gatkBaseCommand,
+        outputBasename   = sampleName + ".unmapped"
     }
 
     call utils.CopyResultsFilesToDir as copyUnmappedBams {input: resultsDir = resultsDir, files = FastqsToUnmappedBam.unmappedBam}
@@ -97,9 +94,8 @@ workflow PreprocessingWF {
       input:
         unmappedBam     = FastqsToUnmappedBam.unmappedBam,
         metricsFilename = sampleName + ".unmapped.markilluminaadapters.metrics",
-        gatkPath        = gatkPath,
-        outputBasename  = sampleName + ".unmapped.markilluminaadapters",
-        javaOpts        = javaOpts
+        gatkBaseCommand = gatkBaseCommand,
+        outputBasename  = sampleName + ".unmapped.markilluminaadapters"
     }
 
     call utils.CopyResultsFilesToDir as copyMarkedIlluminaAdapters  {input: resultsDir = resultsDir,
@@ -117,13 +113,12 @@ workflow PreprocessingWF {
 
     call UnmappedBamToFastq {
       input:
-        unmappedBam    = select_first([MarkIlluminaAdapters.unmappedTaggedBam, resultsDir + "/" + ".unmapped.markilluminaadapters.bam"]),
-        gatkPath       = gatkPath,
-        outputBasename = sampleName,
-        javaOpts       = javaOpts
+        unmappedBam     = select_first([MarkIlluminaAdapters.unmappedTaggedBam, resultsDir + "/" + sampleName + ".unmapped.markilluminaadapters.bam"]),
+        outputBasename  = sampleName,
+        gatkBaseCommand = gatkBaseCommand
     }
 
-    call utils.CopyResultsFilesToDir as copyConvertedFastq  {input: resultsDir = resultsDir, files = UnmappedBamToFastq.convertedFastq}    
+    call utils.CopyResultsFilesToDir as copyConvertedFastq  {input: resultsDir = resultsDir, files = UnmappedBamToFastq.convertedFastq}
 
     # ################################ #
     # 4. BWA-MEM (per-lane per-sample) #
@@ -144,7 +139,6 @@ workflow PreprocessingWF {
         sampleName        = sampleName,
         bwaPath           = bwaPath,
         bwaMemCommand     = bwaMemCommand,
-        gatkPath          = gatkPath,
         outputBamBasename = sampleName + ".aligned"
     }
 
@@ -169,8 +163,8 @@ workflow PreprocessingWF {
         unmappedBam       = select_first([FastqsToUnmappedBam.unmappedBam, resultsDir + "/" + sampleName + ".unmapped.bam"]),
         alignedBam        = BwaMem.alignedBam,
         outputBamBasename = sampleName + ".aligned.merged",
-        gatkPath          = gatkPath,
-        javaOpts          = javaOpts
+        gatkBaseCommand   = gatkBaseCommand
+
     }
 
     call utils.CopyResultsFilesToDir as copyAlignedUnsortedBams {input: resultsDir = resultsDir, files = MergeBamAlignment.alignedUnsortedBam}
@@ -188,11 +182,10 @@ workflow PreprocessingWF {
     call MarkDuplicates {
       input:
         bams              = select_first([MergeBamAlignment.alignedUnsortedBam, resultsDir + "/" + sampleName + ".aligned.merged.bam"]),
-        gatkPath          = gatkPath,
         outputBamBasename = sampleName + ".aligned.merged.deduped",
         metricsFilename   = sampleName + ".aligned.merged.deduped.MarkDuplicates.metrics.txt",
         sortOrder         = "queryname",
-        javaOpts          = javaOpts
+        gatkBaseCommand   = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyMarkedFiles  {input: resultsDir = resultsDir, 
@@ -210,10 +203,10 @@ workflow PreprocessingWF {
 
     call SortSam {
       input:
-        bamToSort      = select_first([MarkDuplicates.markedBam, resultsDir + "/" + sampleName + ".aligned.merged.deduped.bam"]),
-        outputBasename = sampleName + ".aligned.merged.deduped.sorted",
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        bamToSort       = select_first([MarkDuplicates.markedBam, resultsDir + "/" + sampleName + ".aligned.merged.deduped.bam"]),
+        outputBasename  = sampleName + ".aligned.merged.deduped.sorted",
+        gatkBaseCommand = gatkBaseCommand
+
     }
 
     call utils.CopyResultsFilesToDir as copySortedFiles {input: resultsDir = resultsDir, files = [SortSam.sortedBam, SortSam.sortedBamIndex, SortSam.sortedBamMD5]}
@@ -227,8 +220,7 @@ workflow PreprocessingWF {
         sortedBam      = SortSam.sortedBam,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed",
         refFasta       = refFasta,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copySortedFixedFiles {input: resultsDir = resultsDir, 
@@ -274,14 +266,12 @@ task FastqsToUnmappedBam {
   String platform
   String sequencingCenter
 
-  String gatkPath
+  String gatkBaseCommand
 
   String outputBasename
 
-  String javaOpts
-
   command {
-    ${gatkPath} --java-options "${javaOpts}" FastqToSam \
+    ${gatkBaseCommand} FastqToSam \
       --FASTQ ${readsFile1} \
       --FASTQ2 ${readsFile2} \
       --OUTPUT ${outputBasename}.bam \
@@ -304,19 +294,17 @@ task FastqsToUnmappedBam {
 
 
 task MarkIlluminaAdapters {
-  
+
   File unmappedBam
 
   String metricsFilename
 
-  String gatkPath
+  String gatkBaseCommand
 
   String outputBasename
 
-  String javaOpts
-
   command {
-    ${gatkPath} --java-options "${javaOpts}" MarkIlluminaAdapters \
+    ${gatkBaseCommand} MarkIlluminaAdapters \
       --INPUT ${unmappedBam} \
       --METRICS ${metricsFilename} \
       --OUTPUT ${outputBasename}.bam \
@@ -338,14 +326,12 @@ task UnmappedBamToFastq {
 
   File unmappedBam
 
-  String gatkPath
+  String gatkBaseCommand
 
   String outputBasename
 
-  String javaOpts
-
   command {
-    ${gatkPath} --java-options "${javaOpts}" SamToFastq \
+    ${gatkBaseCommand} SamToFastq \
       --INPUT ${unmappedBam} \
       --FASTQ ${outputBasename}.fastq \
       --CLIPPING_ATTRIBUTE XT \
@@ -382,8 +368,6 @@ task BwaMem {
   String bwaPath
   String bwaMemCommand
 
-  String gatkPath
-
   String outputBamBasename
 
   command {
@@ -395,9 +379,9 @@ task BwaMem {
 
     # if refAlt exists and has data in it
     # if [ -s ${refAlt} ]; then
-    
+
     ${bwaPath} ${bwaMemCommand} > ${outputBamBasename}.bam 2> >(tee ${outputBamBasename}.bwa.stderr.log >&2)
-    
+
     # else refAlt is empty or not exists
     #else
     #  exit 1;
@@ -431,14 +415,12 @@ task MergeBamAlignment {
   File unmappedBam
   File alignedBam
 
-  String gatkPath
+  String gatkBaseCommand
 
   String outputBamBasename
 
-  String javaOpts
-
   command {
-    ${gatkPath} --java-options "${javaOpts}" MergeBamAlignment \
+    ${gatkBaseCommand} MergeBamAlignment \
       --ALIGNED_BAM ${alignedBam} \
       --UNMAPPED_BAM ${unmappedBam} \
       --OUTPUT ${outputBamBasename}.bam \
@@ -467,9 +449,8 @@ task MergeBamAlignment {
 task MarkDuplicates {
 
   Array[File?] bams
-  #¿CAMBIAR A ARRAY[FILE] --> Así se podría aprovechar esta función para el MERGE del PER-LANE                                                      ?
 
-  String gatkPath
+  String gatkBaseCommand
 
   String outputBamBasename
 
@@ -484,11 +465,9 @@ task MarkDuplicates {
 
   String? createIndex # Solo se añade esta opción en el MarkDuplicates del VariantCalling
 
-  String javaOpts
-
   # IF --> Ya que no se pueden poner outputs opcionales... esto es un workaround para que cree un .bai vacío y que no de problemas por no encontrar el output markedBai
   command <<<
-    ${gatkPath} --java-options "${javaOpts}" MarkDuplicates \
+    ${gatkBaseCommand} MarkDuplicates \
       --INPUT ${sep=" -I " bams} \
       --OUTPUT ${outputBamBasename}.bam \
       ${"--CREATE_INDEX " + createIndex} \
@@ -527,12 +506,10 @@ task SortSam {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" SortSam \
+    ${gatkBaseCommand} SortSam \
       --INPUT ${bamToSort} \
       --OUTPUT ${outputBasename}.bam \
       --SORT_ORDER coordinate \
@@ -560,12 +537,10 @@ task FixBamTags {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" SetNmMdAndUqTags \
+    ${gatkBaseCommand} SetNmMdAndUqTags \
       --INPUT ${sortedBam} \
       --OUTPUT ${outputBasename}.bam \
       --REFERENCE_SEQUENCE ${refFasta} \

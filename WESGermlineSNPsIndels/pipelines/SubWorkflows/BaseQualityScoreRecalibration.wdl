@@ -19,16 +19,19 @@ workflow BaseQualityScoreRecalibrationWF {
   File? inputBam
   File? inputBai
 
-  File intervalTargetsFile # ¿Fichero con los intervalos de las regiones "targets"? ¿Haría falta agrupar intervalos para que no sean demasiados?
-  Array[Array[String]] intervalTargetsList = read_tsv(intervalTargetsFile)
+  #File intervalTargetsFile # ¿Fichero con los intervalos de las regiones "targets"? ¿Haría falta agrupar intervalos para que no sean demasiados?
+  #Array[Array[String]] intervalTargetsList = read_tsv(intervalTargetsFile)
 
-  File intervalContigsFile # ¿Fichero con los intervalos de "contigs" para el ApplyBQSR? ¿Agregar intervalos?
-  Array[Array[String]] intervalContigsList = read_tsv(intervalContigsFile)
+  #File intervalContigsFile # ¿Fichero con los intervalos de "contigs" para el ApplyBQSR? ¿Agregar intervalos?
+  #Array[Array[String]] intervalContigsList = read_tsv(intervalContigsFile)
+
+  File targets
+  File sequenceGroup
 
   File dbSnps
   File dbSnpsIdx
-  File dbIndelsM1000g
-  File dbIndelsM1000gIdx
+  File millsResource
+  File millsResourceIndex
 
   File refFasta
   File refDict
@@ -44,32 +47,33 @@ workflow BaseQualityScoreRecalibrationWF {
   String resultsDir
 
   String gatkPath
-
   String javaOpts
+  String gatkBaseCommand = gatkPath + ' --java-options ' + '"' + javaOpts + '"' + ' '
 
   # Step 9 - Base recalibrator and gather the results
   if ((firstStep <= 9) && (9 <= lastStep)) {
+
+    call groupTargetedIntervals {input: sequenceGroup = sequenceGroup, targets = targets}
 
     # ################################################################################# #
     # 20. Analyze patterns of covariation in the sequence dataset (per-sample per-lane) #
     # ################################################################################# #
 
-    scatter (interval in intervalTargetsList) {
+    scatter (intervals in groupTargetedIntervals.targetedIntervals) {
       call BaseRecalibrator {
         input:
           inputBam              = inputBam,
           inputBai              = inputBai,
-          recalReportFilename   = sampleName + "ready.deduped.parcial_recal_data.csv",
-          sequenceGroupInterval = interval,
+          recalReportFilename   = sampleName + ".ready.deduped.parcial_recal_data.csv",
+          sequenceGroupInterval = intervals,
           dbSnps                = dbSnps,
           dbSnpsIdx             = dbSnpsIdx,
-          dbIndelsM1000g        = dbIndelsM1000g,
-          dbIndelsM1000gIdx     = dbIndelsM1000gIdx,
+          millsResource         = millsResource,
+          millsResourceIndex    = millsResourceIndex,
           refFasta              = refFasta,
           refDict               = refDict,
           refIndex              = refIndex,
-          gatkPath              = gatkPath,
-          javaOpts              = javaOpts
+          gatkBaseCommand       = gatkBaseCommand
       }
     }
 
@@ -80,9 +84,8 @@ workflow BaseQualityScoreRecalibrationWF {
     call GatherBaseRecalReports {
       input:
         baseRecalReports      = BaseRecalibrator.recalibrationReport,
-        outputReportsFilename = sampleName + "ready.deduped.recal_data.csv",
-        gatkPath              = gatkPath,
-        javaOpts              = javaOpts
+        outputReportsFilename = sampleName + ".ready.deduped.recal_data.csv",
+        gatkBaseCommand       = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyBqsrReports {input: resultsDir = resultsDir, files = GatherBaseRecalReports.bqsrReports}
@@ -97,19 +100,18 @@ workflow BaseQualityScoreRecalibrationWF {
     # 22. Apply the recalibration to your sequence data (per-sample per-lane) #
     # ####################################################################### #
 
-    scatter (interval in intervalContigsList) { # CAMBIAR ESTE INTERVAL-LIST POR EL QUE CORRESPONDA EN EL CASO DEL APPLYBQSR
+    scatter (interval in read_tsv(sequenceGroup)) { # CAMBIAR ESTE INTERVAL-LIST POR EL QUE CORRESPONDA EN EL CASO DEL APPLYBQSR
       call ApplyBQSR {
         input:
           inputBam              = inputBam,
           inputBai              = inputBai,
-          recalibrationReport   = select_first([GatherBaseRecalReports.bqsrReports, resultsDir + "/" + sampleName + "ready.deduped.recal_data.csv"]),
+          recalibrationReport   = select_first([GatherBaseRecalReports.bqsrReports, resultsDir + "/" + sampleName + ".ready.deduped.recal_data.csv"]),
           outputBasename        = sampleName + ".ready.deduped.parcial_recalibrated",
           sequenceGroupInterval = interval,
           refFasta              = refFasta,
           refDict               = refDict,
           refIndex              = refIndex,
-          gatkPath              = gatkPath,
-          javaOpts              = javaOpts
+          gatkBaseCommand       = gatkBaseCommand
       }
     }
 
@@ -119,14 +121,13 @@ workflow BaseQualityScoreRecalibrationWF {
 
     call GatherBamRecalibratedFiles {
       input:
-        inputBams      = ApplyBQSR.recalibratedBam,
-        outputBasename = sampleName + ".ready.deduped.recalibrated",
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        inputBams       = ApplyBQSR.recalibratedBam,
+        outputBasename  = sampleName + ".ready.deduped.recalibrated",
+        gatkBaseCommand = gatkBaseCommand
     }
 
-    call utils.CopyResultsFilesToDir as copyRecalibratedBam {input: resultsDir = resultsDir, 
-    files = [GatherBamRecalibratedFiles.recalibratedBam, GatherBamRecalibratedFiles.recalibratedBamIndex, GatherBamRecalibratedFiles.recalibratedBamChecksum]}
+    call utils.CopyResultsFilesToDir as copyRecalibratedBam {input: resultsDir = resultsDir,
+      files = [GatherBamRecalibratedFiles.recalibratedBam, GatherBamRecalibratedFiles.recalibratedBamIndex, GatherBamRecalibratedFiles.recalibratedBamChecksum]}
 
   }  # End step 10
 
@@ -137,6 +138,31 @@ workflow BaseQualityScoreRecalibrationWF {
     File? recalibratedBamChecksum = GatherBamRecalibratedFiles.recalibratedBamChecksum
   }
 
+}
+
+
+task groupTargetedIntervals {
+
+  File sequenceGroup
+  File targets
+
+  command <<<
+    set -eo pipefail
+
+    number=0
+    while IFS='' read -r line || [[ -n "$line" ]]; do
+      for elem in $line; do
+        if grep -q "$elem-" ${targets}; then
+          grep "$elem-" ${targets} | awk '{print $1 ":" $2 "-" $3}' >> "$number.interval_list"
+        fi
+      done
+      (( ++number ))
+    done < "${sequenceGroup}"
+  >>>
+
+  output {
+    Array[File] targetedIntervals = glob("*.interval_list")
+  }
 }
 
 
@@ -151,26 +177,24 @@ task BaseRecalibrator {
 
   File dbSnps
   File dbSnpsIdx
-  File dbIndelsM1000g
-  File dbIndelsM1000gIdx
+  File millsResource
+  File millsResourceIndex
 
   File refFasta
   File refDict
   File refIndex
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" BaseRecalibrator \
+    ${gatkBaseCommand} BaseRecalibrator \
       --reference ${refFasta} \
       --input ${inputBam} \
       --intervals ${sep=" --intervals " sequenceGroupInterval} \
       --use-original-qualities \
       --output ${recalReportFilename} \
       --known-sites ${dbSnps} \
-      --known-sites ${dbIndelsM1000g}
+      --known-sites ${millsResource}
   }
 
   output {
@@ -188,12 +212,10 @@ task GatherBaseRecalReports {
   Array[File] baseRecalReports
   String outputReportsFilename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" GatherBQSRReports \
+    ${gatkBaseCommand} GatherBQSRReports \
       -I ${sep=" -I " baseRecalReports} \
       -O ${outputReportsFilename}
   }
@@ -224,12 +246,10 @@ task ApplyBQSR {
   File refDict
   File refIndex
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" ApplyBQSR \
+    ${gatkBaseCommand} ApplyBQSR \
       --create-output-bam-md5 \
       --add-output-sam-program-record \
       -R ${refFasta} \
@@ -260,12 +280,10 @@ task GatherBamRecalibratedFiles {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" GatherBamFiles \
+    ${gatkBaseCommand} GatherBamFiles \
       -I ${sep=" -I " inputBams} \
       -O ${outputBasename}.bam \
       --CREATE_INDEX true \

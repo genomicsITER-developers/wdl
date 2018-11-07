@@ -234,10 +234,10 @@ task CreateSequenceGroupingTSV {
 task ScatterIntervalList {
 
   File intervalList
-  
+
   Int scatterCount
   Int breakBandsAtMultiplesOf
-  
+
   String intervalListOutDir
 
   String picardPath

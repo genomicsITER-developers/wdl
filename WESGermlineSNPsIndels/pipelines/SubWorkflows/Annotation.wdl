@@ -31,6 +31,7 @@ workflow AnnotationWF {
 
   String gatkPath
   String javaOpts
+  String gatkBaseCommand = gatkPath + ' --java-options ' + '"' + javaOpts + '"' + ' '
 
   Int firstStep
   Int lastStep
@@ -81,8 +82,7 @@ workflow AnnotationWF {
         annovarVCF     = Annovar.annovarVCF,
         snpEffVCF      = SnpEff.snpEffVCF,
         outputBasename = multiSampleName + ".SNP_INDEL.recalibrated.ANNOVAR.snpEff.GATK.annotations.hg38",
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        gatkBaseCommand       = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyVariantAnnotatorFiles {input: resultsDir = multiSampleDir, files = VariantAnnotator.varAnnotatorVCF}
@@ -190,11 +190,10 @@ task VariantAnnotator {
 
   String outputBasename
 
-  String gatkPath
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-opts ${javaOpts} VariantAnnotator \
+    ${gatkBaseCommand} VariantAnnotator \
       --reference ${refFasta} \
       --annotation SnpEff \ # ?????
       --variant ${annovarVCF} \

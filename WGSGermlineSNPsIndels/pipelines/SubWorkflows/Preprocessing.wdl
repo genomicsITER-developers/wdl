@@ -268,7 +268,7 @@ task FastqsToUnmappedBam {
 
 
 task MarkIlluminaAdapters {
-  
+
   File unmappedBam
 
   String metricsFilename

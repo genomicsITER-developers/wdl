@@ -28,6 +28,8 @@ workflow QualityControlWF {
   Int lastStep
 
   File refFasta
+  File refDict
+  File refIndex
   File? bamFile
 
   File bedFile
@@ -41,10 +43,11 @@ workflow QualityControlWF {
 
   String sampleName
 
-  String gatkPath
-  String qualimapPath
+  # GATK
+  String gatkBaseCommand
 
-  String javaOpts
+  # Qualimap
+  String qualimapPath
   String javaMemSize
 
   # Step 6 - Validate Sam File
@@ -58,8 +61,7 @@ workflow QualityControlWF {
       input:
         bamFile        = bamFile,
         outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.summary",
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copySummaryFile {input: resultsDir = resultsDir, files = ValidateReadyBam.summary}
@@ -106,12 +108,11 @@ workflow QualityControlWF {
 
     call CollectMultipleMetrics {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        intervalList   = intervalList,
-        outputBasename = sampleName + ".clean.deduped.sorted.fixed.bam.qcmetrics",
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        bamFile         = bamFile,
+        intervalList    = intervalList,
+        outputBasename  = sampleName + ".clean.deduped.sorted.fixed.bam.qcmetrics",
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
@@ -123,43 +124,40 @@ workflow QualityControlWF {
     # Collect Raw metrics:
     call CollectRawWgsMetrics {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_raw",
-        minBQ          = 3,
-        minMQ          = 0,
-        intervalList   = intervalList,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        bamFile         = bamFile,
+        outputBasename  = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_raw",
+        minBQ           = 3,
+        minMQ           = 0,
+        intervalList    = intervalList,
+        gatkBaseCommand = gatkBaseCommand
     }
 
     # Collect metrics:
     call CollectWgsMetrics {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_filtered",
-        minBQ          = 20,
-        minMQ          = 20,
-        intervalList   = intervalList,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        bamFile         = bamFile,
+        outputBasename  = sampleName + ".aligned.merged.deduped.sorted.fixed.wes_metrics_filtered",
+        minBQ           = 20,
+        minMQ           = 20,
+        intervalList    = intervalList,
+        gatkBaseCommand = gatkBaseCommand
     }
 
     # Collect metrics ONLY in non zero coverage retions:
     call CollectWgsMetricsWithNonZeroCoverage {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        outputBasename = sampleName + ".clean.deduped.sorted.fixed.wes_metrics_nonzero_coverage",
-        minBQ          = 2,
-        minMQ          = 20,
-        intervalList   = intervalList,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        bamFile         = bamFile,
+        outputBasename  = sampleName + ".clean.deduped.sorted.fixed.wes_metrics_nonzero_coverage",
+        minBQ           = 2,
+        minMQ           = 20,
+        intervalList    = intervalList,
+        gatkBaseCommand = gatkBaseCommand
     }
 
-    call utils.CopyResultsFilesToDir as copyCollectMetrics {input: resultsDir = resultsDir, 
+    call utils.CopyResultsFilesToDir as copyCollectMetrics {input: resultsDir = resultsDir,
       files = [CollectRawWgsMetrics.collectedMetrics, CollectWgsMetrics.collectedMetrics, CollectWgsMetricsWithNonZeroCoverage.collectedMetrics, CollectWgsMetricsWithNonZeroCoverage.collectedMetricsPDF]}
 
     # #################################################### #
@@ -168,13 +166,14 @@ workflow QualityControlWF {
 
     call CollectHsMetrics {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.HsMetrics",
-        baits          = baits,
-        targets        = targets,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        refDict         = refDict,
+        refIndex        = refIndex,
+        bamFile         = bamFile,
+        outputBasename  = sampleName + ".aligned.merged.deduped.sorted.fixed.HsMetrics",
+        baits           = baits,
+        targets         = targets,
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyHsMetrics {input: resultsDir = resultsDir, files = [CollectHsMetrics.hsMetrics, CollectHsMetrics.perTargetCoverage]}
@@ -185,12 +184,11 @@ workflow QualityControlWF {
 
     call CollectOxoGMetrics {
       input:
-        refFasta       = refFasta,
-        bamFile        = bamFile,
-        outputBasename = sampleName + ".aligned.merged.deduped.sorted.fixed.oxoG_metrics",
-        intervalList   = intervalList,
-        gatkPath       = gatkPath,
-        javaOpts       = javaOpts
+        refFasta        = refFasta,
+        bamFile         = bamFile,
+        outputBasename  = sampleName + ".aligned.merged.deduped.sorted.fixed.oxoG_metrics",
+        intervalList    = intervalList,
+        gatkBaseCommand = gatkBaseCommand
     }
 
     call utils.CopyResultsFilesToDir as copyOxoGMetrics {input: resultsDir = resultsDir, files = CollectOxoGMetrics.oxoGMetrics}
@@ -269,12 +267,10 @@ task ValidateSam {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" ValidateSamFile \
+    ${gatkBaseCommand} ValidateSamFile \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
       --MODE SUMMARY
@@ -337,12 +333,10 @@ task CollectMultipleMetrics {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectMultipleMetrics \
+    ${gatkBaseCommand} CollectMultipleMetrics \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
       --REFERENCE_SEQUENCE ${refFasta} \
@@ -387,12 +381,10 @@ task DepthOfCoverage {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" DepthOfCoverage \
+    ${gatkBaseCommand} DepthOfCoverage \
       -R ${refFasta} \
       -I ${bamFile} \
       -O ${outputBasename}
@@ -424,12 +416,10 @@ task CollectRawWgsMetrics {
 
   File intervalList
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectRawWgsMetrics \
+    ${gatkBaseCommand} CollectRawWgsMetrics \
       --REFERENCE_SEQUENCE ${refFasta} \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
@@ -462,12 +452,10 @@ task CollectWgsMetrics {
 
   File intervalList
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectWgsMetrics \
+    ${gatkBaseCommand} CollectWgsMetrics \
       --REFERENCE_SEQUENCE ${refFasta} \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
@@ -500,12 +488,10 @@ task CollectWgsMetricsWithNonZeroCoverage {
 
   File intervalList
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectWgsMetricsWithNonZeroCoverage \
+    ${gatkBaseCommand} CollectWgsMetricsWithNonZeroCoverage \
       --REFERENCE_SEQUENCE ${refFasta} \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
@@ -535,12 +521,10 @@ task CallableLoci {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CallableLoci \
+    ${gatkBaseCommand} CallableLoci \
       -R ${refFasta} \
       -I ${bamFile} \
       --summary ${outputBasename}.callable_loci_table.txt \
@@ -574,12 +558,10 @@ task FindCoveredIntervals {
 
   String uncovered # "--uncovered"
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" FindCoveredIntervals \
+    ${gatkBaseCommand} FindCoveredIntervals \
       -R ${refFasta} \
       -I ${bamFile} \
       -L ${regions} \
@@ -613,12 +595,10 @@ task DiagnoseTargets {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" DiagnoseTargets \
+    ${gatkBaseCommand} DiagnoseTargets \
       -R ${refFasta} \
       -I ${bamFile} \
       -L ${regions} \
@@ -651,12 +631,10 @@ task QualifyMissingIntervals {
 
   Int threads
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" QualifyMissingIntervals \
+    ${gatkBaseCommand} QualifyMissingIntervals \
       -R ${refFasta} \
       -I ${bamFile} \
       -o ${outputBasename} \
@@ -678,18 +656,19 @@ task QualifyMissingIntervals {
 task CollectHsMetrics {
 
   File refFasta
+  File refDict
+  File refIndex
   File? bamFile
-  
+
   String outputBasename
 
   File baits
   File targets
 
-  String gatkPath
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectHsMetrics \
+    ${gatkBaseCommand} CollectHsMetrics \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
       --REFERENCE_SEQUENCE ${refFasta} \
@@ -718,11 +697,10 @@ task CollectOxoGMetrics {
 
   File intervalList
 
-  String gatkPath
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectOxoGMetrics \
+    ${gatkBaseCommand} CollectOxoGMetrics \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
       --REFERENCE_SEQUENCE ${refFasta} \

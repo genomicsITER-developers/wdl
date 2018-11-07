@@ -26,8 +26,7 @@ workflow QualityControlPerSampleWF {
   String sampleName
   String resultsDir
 
-  String gatkPath
-  String javaOpts
+  String gatkBaseCommand
 
   String qualimapPath
   String javaMemSize
@@ -38,10 +37,9 @@ workflow QualityControlPerSampleWF {
 
   call QC.ValidateSam as ValidateMergedBam {
     input:
-      bamFile        = bamFile,
-      outputBasename = sampleName + ".ready.deduped.validation.summary",
-      gatkPath       = gatkPath,
-      javaOpts       = javaOpts
+      bamFile         = bamFile,
+      outputBasename  = sampleName + ".ready.deduped.validation.summary",
+      gatkBaseCommand = gatkBaseCommand
   }
 
   call utils.CopyResultsFilesToDir as copySummaryMergedBam {input: resultsDir = resultsDir, files = ValidateMergedBam.summary}
@@ -52,11 +50,10 @@ workflow QualityControlPerSampleWF {
 
   call CollectMultipleMetrics {
     input:
-      refFasta       = refFasta,
-      bamFile        = bamFile,
-      outputBasename = sampleName + ".ready.deduped.multipleqc.metrics",
-      gatkPath       = gatkPath,
-      javaOpts       = javaOpts
+      refFasta        = refFasta,
+      bamFile         = bamFile,
+      outputBasename  = sampleName + ".ready.deduped.multipleqc.metrics",
+      gatkBaseCommand = gatkBaseCommand
   }
 
   call utils.CopyResultsFilesToDir as copyMultipleMetrics {input: resultsDir = resultsDir, files = CollectMultipleMetrics.collectedMetrics}
@@ -121,12 +118,10 @@ task CollectMultipleMetrics {
 
   String outputBasename
 
-  String gatkPath
-
-  String javaOpts
+  String gatkBaseCommand
 
   command {
-    ${gatkPath} --java-options "${javaOpts}" CollectMultipleMetrics \
+    ${gatkBaseCommand} CollectMultipleMetrics \
       --INPUT ${bamFile} \
       --OUTPUT ${outputBasename} \
       --REFERENCE_SEQUENCE ${refFasta} \

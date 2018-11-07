@@ -1,7 +1,5 @@
 ## Table of Contents
 
-* [Prerequisites](#prerequisites)
-* [Features](#features)
 * [Usage](#usage)
     * [Set input parameters](#set-input-parameters)
     * [Build TSV for pair reads information](#build-tsv-for-pair-reads-information)
@@ -9,34 +7,6 @@
     * [HPC using Slurm scheduler](#hpc-using-slurm-scheduler)
 * [Workflow](#workflow)
 * [WDL Scripts](#wdl-scripts)
-
----
-
-## Prerequisites
-
-Basic software needed to run the pipeline:
-
-* [GATK](https://software.broadinstitute.org/gatk/) (>= 4.0.0.0)
-* [Cromwell](https://cromwell.readthedocs.io/en/stable/)
-* [Womtool](https://cromwell.readthedocs.io/en/stable/WOMtool/) (Optional)
-* [BWA](http://bio-bwa.sourceforge.net/)
-* [Samtools, HTSlib](http://www.htslib.org/)
-* [Picard](https://broadinstitute.github.io/picard/)
-* [Python](https://www.python.org/)
-* [Qualimap](http://qualimap.bioinfo.cipf.es/)
-
----
-
-## Features
-
-- Possibility to run on a HPC infrastructure connecting the Cromwell engine and the SLURM scheduler.
-- Starts from BCL data.
-- Demultiplexing of samples pooled across the flowcell.
-- Data processing both on a per-lane and a per-sample basis.
-- Possibility to handle hg19 and hg38 reference genomes.
-- Programmed to restart from every step in case of fail.
-
-For benchmarking, we are following the guidelines of the Truth and Consistency [precisionFDA challenges](https://precision.fda.gov/) using [Genome In A Bottle Consortium](http://jimb.stanford.edu/giab/) released genomes data.
 
 ---
 
@@ -326,7 +296,7 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 
 ## Workflow
 
-![](./images/wgs-gatk-pipeline.png)
+![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/wgs-gatk-pipeline-jbi.png?raw=true)
 
 ### A. Per sample, per lane
 
