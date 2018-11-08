@@ -1,8 +1,6 @@
-WDL-based pipelines for whole genome and exome sequencing analysis
-==================================================================
+# WDL-based pipelines for whole genome and exome sequencing analysis
 
-![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
-
+# ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
 
 ## Table of Contents
 
@@ -11,6 +9,7 @@ WDL-based pipelines for whole genome and exome sequencing analysis
 * [Features](#features)
 * [WGSGermlineSNPsIndels](#wgsgermlinesnpsindels)
 * [WESGermlineSNPsIndels](#wesgermlinesnpsindels)
+* [Funding and Acknowledgement](#funding-and-acknowledgement)
 
 ---
 
@@ -67,6 +66,14 @@ Pipeline for whole genome and sequencing analysis.
 Pipeline for whole exome and sequencing analysis.
 
 * [Documentation](https://github.com/genomicsITER-developers/wdl/tree/master/WESGermlineSNPsIndels)
+
+---
+
+## Funding and Acknowledgement
+
+Funded by Ministerio de Ciencia, Innovación y Universidades (RTC-2017-6471-1; MINECO/AEI/FEDER, UE). This work has been supported by the CEDeI program (Centro de Excelencia de Desarrollo e Innovación, Cabildo de Tenerife). The authors also thankfully acknowledge the computer resources and the technical support provided by TARO Research Group of the University of La Laguna.
+
+![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-2.png?raw=true)
 
 ---
 
