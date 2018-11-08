@@ -91,7 +91,7 @@ First of all, you need to configure all the inputs needed by the workflow. To do
    "##_NOTE_3": "Set '...' to BWA path.",
    "WholeGenomeSequencingGATK4WF.bwaPath": ".../bwa",
    "WholeGenomeSequencingGATK4WF.bwaMemCommand_pairedSplit": "mem -K 100000000 -v 3 -t 2 -Y $bashRefFasta $bashReadFastq1 $bashReadFastq2",
-   "WholeGenomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",   
+   "WholeGenomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",
 
    "##_4": "SAMTOOLS",
    "##_NOTE_4": "Set '...' to Samtools path.",

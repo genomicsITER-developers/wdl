@@ -20,132 +20,138 @@ First of all, you need to configure all the inputs needed by the workflow. To do
 {
    "##_1": "REFERENCE GENOME DATA",
    "##_NOTE_1": "Set '...' to your own path",
+   "WholeExomeSequencingGATK4WF.refBaseDir":                      ".../hg19/",
+   "WholeExomeSequencingGATK4WF.refBaseName":                     "hg19_ref_genome",
 
-   "WholeGenomeSequencingGATK4WF.refBaseDir":  ".../hg38/",
-   "WholeGenomeSequencingGATK4WF.refBaseName": "Homo_sapiens_assembly38",
+   "WholeExomeSequencingGATK4WF.refFasta":                        ".../hg19/hg19_ref_genome.fasta",
+   "WholeExomeSequencingGATK4WF.refAlt":                          ".../hg19/hg19_ref_genome.alt.fasta",
+   "WholeExomeSequencingGATK4WF.refIndex":                        ".../hg19/hg19_ref_genome.fasta.fai",
+   "WholeExomeSequencingGATK4WF.refDict":                         ".../hg19/hg19_ref_genome.dict",
+   "WholeExomeSequencingGATK4WF.refAmb":                          ".../hg19/hg19_ref_genome.fasta.amb",
+   "WholeExomeSequencingGATK4WF.refAnn":                          ".../hg19/hg19_ref_genome.fasta.ann",
+   "WholeExomeSequencingGATK4WF.refBwt":                          ".../hg19/hg19_ref_genome.fasta.bwt",
+   "WholeExomeSequencingGATK4WF.refPac":                          ".../hg19/hg19_ref_genome.fasta.pac",
+   "WholeExomeSequencingGATK4WF.refSa":                           ".../hg19/hg19_ref_genome.fasta.sa",
 
-   "WholeGenomeSequencingGATK4WF.refFasta":    ".../hg38/Homo_sapiens_assembly38.fasta",
-   "WholeGenomeSequencingGATK4WF.refAlt":      ".../hg38/Homo_sapiens_assembly38.fasta.64.alt",
-   "WholeGenomeSequencingGATK4WF.refIndex":    ".../hg38/Homo_sapiens_assembly38.fasta.fai",
-   "WholeGenomeSequencingGATK4WF.refDict":     ".../hg38/Homo_sapiens_assembly38.dict",
-   "WholeGenomeSequencingGATK4WF.refAmb":      ".../hg38/Homo_sapiens_assembly38.fasta.amb",
-   "WholeGenomeSequencingGATK4WF.refAnn":      ".../hg38/Homo_sapiens_assembly38.fasta.ann",
-   "WholeGenomeSequencingGATK4WF.refBwt":      ".../hg38/Homo_sapiens_assembly38.fasta.bwt",
-   "WholeGenomeSequencingGATK4WF.refPac":      ".../hg38/Homo_sapiens_assembly38.fasta.pac",
-   "WholeGenomeSequencingGATK4WF.refSa":       ".../hg38/Homo_sapiens_assembly38.fasta.sa",
+   "WholeExomeSequencingGATK4WF.dbSnps":                          ".../hg19/dbs/dbsnp_138.hg19.vcf.gz",
+   "WholeExomeSequencingGATK4WF.dbSnpsIdx":                       ".../hg19/dbs/dbsnp_138.hg19.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.snp1000g":                        ".../hg19/dbs/1000G_phase1.snps.high_confidence.hg19.sites.vcf.gz",
+   "WholeExomeSequencingGATK4WF.snp1000gIdx":                     ".../hg19/dbs/1000G_phase1.snps.high_confidence.hg19.sites.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.hapMapResource":                  ".../hg19/dbs/hapmap_3.3.hg19.sites.vcf.gz",
+   "WholeExomeSequencingGATK4WF.hapMapResourceIndex":             ".../hg19/dbs/hapmap_3.3.hg19.sites.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.omniResource":                    ".../hg19/dbs/1000G_omni2.5.hg19.sites.vcf.gz",
+   "WholeExomeSequencingGATK4WF.omniResourceIndex":               ".../hg19/dbs/1000G_omni2.5.hg19.sites.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.millsResource":                   ".../hg19/dbs/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz",
+   "WholeExomeSequencingGATK4WF.millsResourceIndex":              ".../hg19/dbs/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf.gz.tbi",
 
-   "WholeGenomeSequencingGATK4WF.dbSnpsVcf":                          ".../hg38/Homo_sapiens_assembly38.dbsnp138.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.dbSnpsVcfIdx":                       ".../hg38/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi",
-   "WholeGenomeSequencingGATK4WF.hapMapResourceVcf":                  ".../hg38/hapmap_3.3.hg38.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.hapMapResourceVcfIndex":             ".../hg38/hapmap_3.3.hg38.vcf.gz.tbi",
-   "WholeGenomeSequencingGATK4WF.omniResourceVcf":                    ".../hg38/1000G_omni2.5.hg38.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.omniResourceVcfIndex":               ".../hg38/1000G_omni2.5.hg38.vcf.gz.tbi",
-   "WholeGenomeSequencingGATK4WF.oneThousandGenomesResourceVcf":      ".../hg38/1000G_phase1.snps.high_confidence.hg38.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.oneThousandGenomesResourceVcfIndex": ".../hg38/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi",
-   "WholeGenomeSequencingGATK4WF.millsResourceVcf":                   ".../hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.millsResourceVcfIndex":              ".../hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
-   "WholeGenomeSequencingGATK4WF.axiomPolyResourceVcf":               ".../hg38/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz",
-   "WholeGenomeSequencingGATK4WF.axiomPolyResourceVcfIndex":          ".../hg38/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi",
+   "WholeExomeSequencingGATK4WF.protectionTag":                        "''",
 
-   "##CAMBIAR VALOR DE LAS 2 SIGUIENTES": "wgsCoverageIntervalList y wgsEvaluationIntervalList",
-   "WholeGenomeSequencingGATK4WF.wgsCoverageIntervalList":   ".../hg38/Homo_sapiens_assembly38.fasta.sa",
-   "WholeGenomeSequencingGATK4WF.wgsEvaluationIntervalList": ".../hg38/Homo_sapiens_assembly38.fasta.sa",
+   "WholeExomeSequencingGATK4WF.useGenomicsDB": false,
 
-   "WholeGenomeSequencingGATK4WF.knownIndelsSitesVcfs": [
-      ".../hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz", 
-      ".../hg38/Homo_sapiens_assembly38.known_indels.vcf.gz"
-   ],
-   "WholeGenomeSequencingGATK4WF.knownIndelsSitesIndices": [
-      ".../hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
-      ".../hg38/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi"
-   ],
+   "##_ADDITIONAL_PARAMS": "tranches, annotations, filter levels...",
+   "WholeExomeSequencingGATK4WF.snpRecalibrationTrancheValues":      ["100.0", "99.95", "99.9", "99.8", "99.6", "99.5", "99.4", "99.3", "99.0", "98.0", "97.0", "90.0"],
+   "WholeExomeSequencingGATK4WF.snpRecalibrationAnnotationValues":   ["QD", "MQRankSum", "ReadPosRankSum", "FS", "MQ", "SOR", "DP"],
+   "WholeExomeSequencingGATK4WF.indelRecalibrationTrancheValues":    ["100.0", "99.95", "99.9", "99.5", "99.0", "97.0", "96.0", "95.0", "94.0", "93.5", "93.0", "92.0", "91.0", "90.0"],
+   "WholeExomeSequencingGATK4WF.indelRecalibrationAnnotationValues": ["QD", "MQRankSum", "ReadPosRankSum", "FS", "SOR", "DP"],
+   "WholeExomeSequencingGATK4WF.snpFilterLevel":                     99.7,
+   "WholeExomeSequencingGATK4WF.indelFilterLevel":                   99.7,
+   "WholeExomeSequencingGATK4WF.snpVQSRDownsampleFactor":            10,
+   "WholeExomeSequencingGATK4WF.indelsMaxGaussians":                 2,
+   "WholeExomeSequencingGATK4WF.snpsMaxGaussians":                   4,
+   "WholeExomeSequencingGATK4WF.maxAltAlleles":                      3,
+   "WholeExomeSequencingGATK4WF.intervalPadding":                    0,
 
-   "##_HG38_INTERVAL_LIST": "intervalList, scatterCount, breakBandsAtMultiplesOf, intervalListOutDir, useGenomicsDB",
-   "WholeGenomeSequencingGATK4WF.intervalList": ".../hg38/wgs_calling_regions.hg38.interval_list",
-   "WholeGenomeSequencingGATK4WF.scatterCount": 5,
-   "WholeGenomeSequencingGATK4WF.breakBandsAtMultiplesOf": 1000000,
-   "WholeGenomeSequencingGATK4WF.intervalListOutDir": "intervalsDirectory",
-   "WholeGenomeSequencingGATK4WF.useGenomicsDB": true,
+   "WholeExomeSequencingGATK4WF.snpRecalibrationTrancheValues_SMALL_LIST": ["100.0", "99.9", "99.0", "90.0"],
+   "WholeExomeSequencingGATK4WF.indelRecalibrationTrancheValues_SMALL_LIST": ["100.0", "99.9", "99.0", "95.0", "90.0"],
 
-   "##_VQSR_PARAMS": "tranches, annotations, filter levels...",
-   "WholeGenomeSequencingGATK4WF.snpRecalibrationTrancheValues": ["100.0", "99.95", "99.9", "99.8", "99.6", "99.5", "99.4", "99.3", "99.0", "98.0", "97.0", "90.0"],
-   "WholeGenomeSequencingGATK4WF.snpRecalibrationTrancheValues_SMALL_LIST": ["100.0", "99.9", "99.0", "90.0"],
-   "WholeGenomeSequencingGATK4WF.snpRecalibrationAnnotationValues": ["QD", "MQRankSum", "ReadPosRankSum", "FS", "MQ", "SOR", "DP"],
-   "WholeGenomeSequencingGATK4WF.indelRecalibrationTrancheValues": ["100.0", "99.95", "99.9", "99.5", "99.0", "97.0", "96.0", "95.0", "94.0", "93.5", "93.0", "92.0", "91.0", "90.0"],
-   "WholeGenomeSequencingGATK4WF.indelRecalibrationTrancheValues_SMALL_LIST": ["100.0", "99.9", "99.0", "95.0", "90.0"],
-   "WholeGenomeSequencingGATK4WF.indelRecalibrationAnnotationValues": ["QD", "MQRankSum", "ReadPosRankSum", "FS", "SOR", "DP"],
-   "WholeGenomeSequencingGATK4WF.snpFilterLevel": 99.7,
-   "WholeGenomeSequencingGATK4WF.indelFilterLevel": 99.7,
-   "WholeGenomeSequencingGATK4WF.snpVQSRDownsampleFactor": 10,
-   "WholeGenomeSequencingGATK4WF.indelsMaxGaussians": 2,
-   "WholeGenomeSequencingGATK4WF.snpsMaxGaussians": 4,
 
    "##_2": "READS",
-   "##_NOTE_2": "Set '...' to reads path.",
-   "WholeGenomeSequencingGATK4WF.fastqReadsTSV": ".../reads/read_pairs.tsv",
-   "WholeGenomeSequencingGATK4WF.libraryName": "LIB-01",
-   "WholeGenomeSequencingGATK4WF.platform": "illumina",
-   "WholeGenomeSequencingGATK4WF.sequencingCenter": "ITER-GENOMICA",
+   "##_NOTE_2": "Set '...' to reads path and libraryName, platform and sequencingCenter to your own values.",
+   "WholeExomeSequencingGATK4WF.fastqReadsTSV": ".../data/read_pairs.tsv",
+   "WholeExomeSequencingGATK4WF.libraryName": "LIB-01",
+   "WholeExomeSequencingGATK4WF.platform": "illumina",
+   "WholeExomeSequencingGATK4WF.sequencingCenter": "ITER-GENOMICA",
 
-   "##_3": "BWA",
-   "##_NOTE_3": "Set '...' to BWA path.",
-   "WholeGenomeSequencingGATK4WF.bwaPath": ".../bwa",
-   "WholeGenomeSequencingGATK4WF.bwaMemCommand_pairedSplit": "mem -K 100000000 -v 3 -t 2 -Y $bashRefFasta $bashReadFastq1 $bashReadFastq2",
-   "WholeGenomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",   
 
-   "##_4": "SAMTOOLS",
-   "##_NOTE_4": "Set '...' to Samtools path.",
-   "WholeGenomeSequencingGATK4WF.samtoolsPath": ".../samtools",
+   "##_3": "INTERVALS FILES",
+   "##_NOTE_3": "Set '...' to reads path.",
+   "WholeExomeSequencingGATK4WF.bedFile":             ".../data/Illumina_TruSeq_Rapid_Exome/truseq-rapid-exome-targeted-regions-manifest-v1-2_6cols.bed",
+   "WholeExomeSequencingGATK4WF.bedFilePadding":      ".../data/Illumina_TruSeq_Rapid_Exome/truseq-rapid-exome-targeted-regions-manifest-v1-2_6cols_padding100bp.bed",
+   "WholeExomeSequencingGATK4WF.intervalList":        ".../data/Illumina_TruSeq_Rapid_Exome/truseq-rapid-exome-targeted-regions-manifest-v1-2_6cols.targets.interval_list",
+   "WholeExomeSequencingGATK4WF.targets":             ".../data/Illumina_TruSeq_Rapid_Exome/truseq-rapid-exome-targeted-regions-manifest-v1-2_6cols.targets.interval_list",
+   "WholeExomeSequencingGATK4WF.baits":               ".../data/Illumina_TruSeq_Rapid_Exome/truseq-rapid-exome-probes-manifest-v1-2_6cols.baits.interval_list",
+   "WholeExomeSequencingGATK4WF.TSVIntervalsFile":    ".../data/sequence_grouping_small.txt",
+   "WholeExomeSequencingGATK4WF.intervalContigsFile": ".../data/sequence_grouping_small.txt",
+   "WholeExomeSequencingGATK4WF.intervalTargetsFile": ".../data/Nextera_Rapid_Capture_Expanded_Exome/nexterarapidcapture_expandedexome_targetedregions.bed",
 
-   "##_5": "GATK",
-   "##_NOTE_5": "Set '...' to GATK4 path.",
-   "WholeGenomeSequencingGATK4WF.gatkPath": ".../gatk",
 
-   "##_6": "PICARD",
-   "##_NOTE_6": "Set '...' to Picard path.",
-   "WholeGenomeSequencingGATK4WF.picardPath": ".../picard.jar",
+   "##_4": "BWA",
+   "##_NOTE_4": "Set '...' to BWA path and the -t value to your own configuration.",
+   "WholeExomeSequencingGATK4WF.bwaPath": "bwa",
+   "WholeExomeSequencingGATK4WF.bwaMemCommand": "mem -K 100000000 -p -v 3 -t 2 -Y $bashRefFasta $bashReadFastq",
 
-   "##_7": "PYTHON",
-   "##_NOTE_7": "Set python path and TSV intervals file.",
-   "WholeGenomeSequencingGATK4WF.pythonPath": ".../python2",
-   "WholeGenomeSequencingGATK4WF.TSVIntervalsFile": ".../intervals.tsv",
-   "WholeGenomeSequencingGATK4WF.protectionTag": ":1+",
+   "WholeExomeSequencingGATK4WF.bwaMemCommand_pairedSplit": "mem -K 100000000 -v 3 -t 1 -Y $bashRefFasta $bashReadFastq1 $bashReadFastq2",
 
-   "##_8": "QUALIMAP",
-   "##_NOTE_8": "Set '...' to Qualimap path.",
-   "WholeGenomeSequencingGATK4WF.qualimapPath": ".../qualimap",
 
-   "##_9": "RESULTS DIR",
-   "##_NOTE_9": "Set '...' to results path.",
-   "WholeGenomeSequencingGATK4WF.resultsDir": ".../results",
+   "##_5": "SAMTOOLS",
+   "##_NOTE_5": "Set '...' to Samtools path.",
+   "WholeExomeSequencingGATK4WF.samtoolsPath": ".../samtools",
 
-   "##_10": "CONFIGURATION PARAMETERS",
-   "WholeGenomeSequencingGATK4WF.wfPerSamplePerLane": true,
-   "WholeGenomeSequencingGATK4WF.wfPreprocess": true,
-   "WholeGenomeSequencingGATK4WF.wfQC_PerSamplePerLane": false,
 
-   "WholeGenomeSequencingGATK4WF.wfPerSample": true,
-   "WholeGenomeSequencingGATK4WF.wfVariantCalling": true,
-   "WholeGenomeSequencingGATK4WF.wfBQSR": true,
-   "WholeGenomeSequencingGATK4WF.wfQC_PerSample": false,
+   "##_6": "GATK",
+   "##_NOTE_6": "Set '...' to GATK4 path.",
+   "WholeExomeSequencingGATK4WF.gatkPath": ".../gatk",
 
-   "WholeGenomeSequencingGATK4WF.wfMultiSample": true,
-   "WholeGenomeSequencingGATK4WF.wfJointGenotyping": true,
-   "WholeGenomeSequencingGATK4WF.wfVQSR": true,
-   "WholeGenomeSequencingGATK4WF.wfQC_MultiSample": true,
 
-   "WholeGenomeSequencingGATK4WF.firstStep": 0,
-   "WholeGenomeSequencingGATK4WF.lastStep": 100,
+   "##_7": "PICARD",
+   "##_NOTE_7": "Set '...' to Picard path.",
+   "WholeExomeSequencingGATK4WF.picardPath": ".../picard.jar",
 
-   "##_11": "Java Opts: Select Xms16g for 30GB-RAM and 60GB-RAM nodes. Select Xmx28g for 30GB-RAM or Xmx56 for 60GB-RAM nodes",
-   "WholeGenomeSequencingGATK4WF.javaOpts": "-Xmx8g -Xms8g"
+
+   "##_8": "PYTHON",
+   "##_NOTE_8": "Set python path.",
+   "WholeExomeSequencingGATK4WF.pythonPath": ".../python2",
+
+
+   "##_9": "QUALIMAP",
+   "##_NOTE_9": "Set '...' to Qualimap path.",
+   "WholeExomeSequencingGATK4WF.qualimapPath": ".../qualimap",
+   "WholeExomeSequencingGATK4WF.javaMemSize":  "8G",
+
+
+   "##_12": "RESULTS DIR",
+   "##_NOTE_10": "Set '...' to results path.",
+   "WholeExomeSequencingGATK4WF.resultsDir": ".../data/results",
+
+
+   "##_13": "CONFIGURATION PARAMETERS",
+   "WholeExomeSequencingGATK4WF.wfPerSamplePerLane":    true,
+   "WholeExomeSequencingGATK4WF.wfPreprocess":          true,
+   "WholeExomeSequencingGATK4WF.wfQC_PerSamplePerLane": true,
+   "WholeExomeSequencingGATK4WF.wfBQSR":                true,
+
+   "WholeExomeSequencingGATK4WF.wfPerSample":           true,
+   "WholeExomeSequencingGATK4WF.wfVariantCalling":      true,
+   "WholeExomeSequencingGATK4WF.wfQC_PerSample":        true,
+
+   "WholeExomeSequencingGATK4WF.wfMultiSample":         true,
+   "WholeExomeSequencingGATK4WF.wfJointGenotyping":     true,
+   "WholeExomeSequencingGATK4WF.wfVQSR":                true,
+   "WholeExomeSequencingGATK4WF.wfQC_MultiSample":      true,
+   "WholeExomeSequencingGATK4WF.wfAnnotation":          false,
+
+   "WholeExomeSequencingGATK4WF.firstStep":             0,
+   "WholeExomeSequencingGATK4WF.lastStep":              100,
+
+   "##_14": "Java Opts: Select Xms16g for 30GB-RAM and 60GB-RAM nodes. Select Xmx28g for 30GB-RAM or Xmx56 for 60GB-RAM nodes",
+   "WholeExomeSequencingGATK4WF.javaOpts": "-Xms8g -Xmx8g"
 }
 ```
 
 Optionally, you can create a clean JSON template with these parameters using Womtool with the following command:
 
 ```
-java -jar womtool-<version>.jar inputs WholeGenomeSequencingGATK4.wdl > WholeGenomeSequencingGATK4.inputs.json
+java -jar womtool-<version>.jar inputs WholeExomeSequencingGATK4.wdl > WholeExomeSequencingGATK4.inputs.json
 ```
 
 ### Build TSV for pair reads information
@@ -193,7 +199,7 @@ backend {
 
 Use the following command to run the workflow in your system using this configuration file:
 ```
-java -Dconfig.file=./backends/backend-local.conf -jar cromwell-<version>.jar run ./pipelines/WholeGenomeSequencingGATK4.wdl -i ./inputs/WholeGenomeSequencingGATK4.inputs.json -m metadata.json
+java -Dconfig.file=./backends/backend-local.conf -jar cromwell-<version>.jar run ./pipelines/WholeExomeSequencingGATK4.wdl -i ./inputs/WholeExomeSequencingGATK4.inputs.json -m metadata.json
 ```
 
 ### HPC using Slurm scheduler
@@ -282,8 +288,8 @@ module load java-jre/1.8.0_77 qualimap/2.2.1
 
 java -Dconfig.file=./backends/backend-slurm.conf \
 -jar .../cromwell-<version>.jar \
-run ./pipelines/WholeGenomeSequencingGATK4.wdl \
--i ./inputs/WholeGenomeSequencingGATK4.inputs.json \
+run ./pipelines/WholeExomeSequencingGATK4.wdl \
+-i ./inputs/WholeExomeSequencingGATK4.inputs.json \
 -m metadata.json
 ```
 
@@ -312,49 +318,53 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 #### 2. Quality Control
     1. ValidateSam...................................(step 8)
     2. Qualimap......................................(step 9)
-    3. CollectRawWgsMetrics (3-0)....................(step 10)
-    4. CollectRawWgsMetrics (20-20)..................(step 11)
-    5. CollectWgsMetricsWithNonZeroCoverage..........(step 12)
-    6. ¿DepthOfCoverage?.............................(step 13)
-    7. CollectMultipleMetrics........................(step 14)
-    8. ¿CallableLoci?................................(step 15)
- 
+    3. CollectMultipleMetrics........................(step 10)
+    4. CollectRawWgsMetrics..........................(step 11)
+    5. CollectWgsMetrics.............................(step 12)
+    6. CollectWgsMetricsWithNonZeroCoverage..........(step 13)
+    7. CollectHsMetrics..............................(step 14)
+    8. CollectOxoGMetrics............................(step 15)
+
+#### 3. BaseQualityScoreRecalibration
+    1. BaseRecalibrator (by intervals*)..............(step 16)
+    2. GatherBQSRReports.............................(step 17)
+    3. ApplyBQSR (by intervals*).....................(step 18)
+    4. GatherBamFiles................................(step 19)
+
 ### B. Per sample
-   
+
 #### 1. Variant Calling
-    1. MarkDuplicates (MergeBamsPerSample)............(step 16)
-    2. BQSR
-        1. BaseRecalibrator (by intervals*)...........(step 17)
-        2. GatherBQSRReports..........................(step 18)
-        3. ApplyBQSR (by intervals*)..................(step 19)
-        4. GatherBamFiles.............................(step 20)
-    3. HaplotypeCaller (by intervals*)................(step 21)
-    4. MergeVcfs......................................(step 22)
- 
+    1. MarkDuplicates (MergeBamsPerSample)...........(step 20)
+    2. HaplotypeCaller (by intervals*)...............(step 21)
+    3. MergeVcfs.....................................(step 22)
+
 #### 2. Quality Control (Using MarkDuplicates (MergeBamsPerSample) output file)
-    1. ValidateSam....................................(step 23)
-    2. ¿DepthOfCoverage?..............................(step 24)
-    3. CollectMultipleMetrics.........................(step 25)
-    4. ¿CallableLoci?.................................(step 26)
- 
+    1. ValidateSam...................................(step 23)
+    2. CollectMultipleMetrics........................(step 24)
+    3. Qualimap......................................(step 25)
+
 ### C. Multi-sample
- 
+
 #### 1. Joing Genotyping
     if (useGenomicsDB == true)
-        1. GenomicsDBImport (by intervals*)...........(step 27)───┐
-    else                                                          |─ In the inputs JSON file, select if you are using GenomicsDB or not.
-        1. CombineGVCFs (by intervals*)...............(step 27)───┘
-    2. GenotypeGVCFs (by intervals*)..................(step 28)
-    3. VariantFiltration (by intervals*)..............(step 29)
-    4. MakeSitesOnlyVcf (by intervals*)...............(step 30)
-    5. GatherVcfsCloud................................(step 31)
-    6. VQSR
-        1. SNPs
-            1. VariantRecalibratorCreateModel.........(step 32)
-        2. Indels
-            1. VariantRecalibrator....................(step 33)
-        3. ApplyRecalibration (by intervals*).........(step 34)
-        4. CollectVariantCallingMetrics...............(step 35)
+        1. GenomicsDBImport (by intervals*)..........(step 26)───┐
+    else                                                         |─ In the inputs JSON file, select if you are using GenomicsDB or not.
+        1. CombineGVCFs (by intervals*)..............(step 26)───┘
+    2. GenotypeGVCFs (by intervals*).................(step 27)
+    3. VariantFiltration (by intervals*).............(step 28)
+    4. MakeSitesOnlyVcf (by intervals*)..............(step 29)
+    5. GatherVcfsCloud...............................(step 30)
+
+#### 2. VariantQualityScoreRecalibration
+    1. SNPs
+        1. VariantRecalibratorCreateModel............(step 31)
+    2. Indels
+        1. VariantRecalibrator.......................(step 32)
+    3. ApplyRecalibration (by intervals*)............(step 33)
+    4. CollectVariantCallingMetrics..................(step 34)
+
+#### 3. Quality Control
+    1. CollectVariantCallingMetrics..................(step 35)
 
 
 **\* Intervals:**
@@ -368,22 +378,22 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 Hierarchy tree:
 
 ```
-WholeGenomeSequencingGATK4.wdl
+WholeExomeSequencingGATK4.wdl
     |
     |
-    └─── SetWorkingDirectory.wdl
+    └─── Utils.wdl
     |
     |
     └─── Preprocessing.wdl
     |    |
     |    |
     |    └─── QualityControl.wdl
-    |
-    |
-    └─── VariantCallingPerSample.wdl
     |    |
     |    |
     |    └─── BaseQualityScoreRecalibration.wdl
+    |
+    |
+    └─── VariantCallingPerSample.wdl
     |    |
     |    |
     |    └─── QualityControlPerSample.wdl
@@ -393,6 +403,9 @@ WholeGenomeSequencingGATK4.wdl
          |
          |
          └─── VariantQualityScoreRecalibration.wdl
+         |
+         |
+         └─── QualityControlMultiSample.wdl
 ```
 
 ---
