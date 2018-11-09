@@ -9,17 +9,17 @@
 -->
 
 <div class="row" style="clear:both; display:table;">
-  <div class="column" style="float:left; padding-right:15px;">
+  <div class="column" style="float:left;">
     <a href="https://www.ull.es/">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png" alt="ull">
     </a>
   </div>
-  <div class="column" style="float:left; padding-right:15px;">
+  <div class="column" style="float:left;">
     <a href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Taro-small.png" alt="taro">
     </a>
   </div>
-  <div class="column" style="float:left; padding-right:15px;">
+  <div class="column" style="float:left;">
     <a href="http://www.iter.es/">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ITER-small.png" alt="iter">
     </a>
