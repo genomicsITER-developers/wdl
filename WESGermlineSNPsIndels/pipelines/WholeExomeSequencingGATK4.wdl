@@ -369,7 +369,7 @@ workflow WholeExomeSequencingGATK4WF {
             inputBam            = select_first([PreprocessingSubworkflow.fixedBam,      ActualDirectory.directory + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bam"]),
             inputBai            = select_first([PreprocessingSubworkflow.fixedBamIndex, ActualDirectory.directory + "/" + sampleName + ".aligned.merged.deduped.sorted.fixed.bai"]),
             targets             = targets,
-            sequenceGroup       = select_first(intervalContigsFile, CreateSequenceGroupingTSV.sequenceGrouping),
+            sequenceGroup       = select_first([intervalContigsFile, CreateSequenceGroupingTSV.sequenceGrouping]),
             dbSnps              = dbSnps,
             dbSnpsIdx           = dbSnpsIdx,
             millsResource       = millsResource,
