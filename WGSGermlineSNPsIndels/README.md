@@ -294,7 +294,7 @@ screen -d -m -t wgs-wdl-pipeline -L sh ./slurm/run_pipeline.sh
 
 ## Workflow
 
-![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/wgs-gatk-pipeline-jbi.png?raw=true)
+![](https://github.com/genomicsITER-developers/wdl/blob/master/WGSGermlineSNPsIndels/images/wgs-gatk-pipeline.png?raw=true)
 
 ### A. Per sample, per lane
 

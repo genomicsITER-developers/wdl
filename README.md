@@ -1,56 +1,23 @@
 # WDL-based pipelines for whole genome and exome sequencing analysis
-<!--
-<p align="center">
-   <img src="/home/administrador/Imágenes/JBI-poster/folder/ULL-recortada-small.png"/>
-   <img src="/home/administrador/Imágenes/JBI-poster/folder/Taro-small.png"/>
-   <img src="/home/administrador/Imágenes/JBI-poster/folder/ITER-small.png"/>
-   <img src="/home/administrador/Imágenes/JBI-poster/folder/CabildodeTenerife-small.png"/>
-</p>
--->
 
+<!--
 <div class="row" style="clear:both; display:table;">
    <a target="_blank" href="https://www.ull.es/" style="text-decoration:none;">
-      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png" alt="ull" hspace="3"/>
+      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png?raw=true" alt="ull" hspace="3"/>
    </a>
    <a target="_blank" rel="noopener noreferrer" href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/" style="text-decoration:none;">
-      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Taro-small.png" alt="taro" hspace="5"/>
+      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Taro-small.png?raw=true" alt="taro" hspace="5"/>
    </a>
    <a target="_blank" rel="noopener noreferrer" href="http://www.iter.es/" style="text-decoration:none;">
-      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ITER-small.png" alt="iter" hspace="5"/>
+      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ITER-small.png?raw=true" alt="iter" hspace="5"/>
    </a>
    <a target="_blank" rel="noopener noreferrer" href="http://www.tenerife.es/portalcabtfe/es/" style="text-decoration:none;">
-      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png" alt="cabildo" hspace="3"/>
+      <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png?raw=true" alt="cabildo" hspace="3"/>
    </a>
 </div>
-
-<!--
-<div class="row" style="clear:both; display:table;">
-  <div class="column" style="float:left; padding-right:15px;">
-    <a href="https://www.ull.es/">
-      <img src="/home/administrador/Imágenes/JBI-poster/folder/ULL-recortada-small.png" alt="ull">
-    </a>
-  </div>
-  <div class="column" style="float:left; padding-right:15px;">
-    <a href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/">
-      <img src="/home/administrador/Imágenes/JBI-poster/folder/Taro-small.png" alt="taro">
-    </a>
-  </div>
-  <div class="column" style="float:left; padding-right:15px;">
-    <a href="http://www.iter.es/">
-      <img src="/home/administrador/Imágenes/JBI-poster/folder/ITER-small.png" alt="iter">
-    </a>
-  </div>
-  <div class="column" style="float:left;">
-    <a href="http://www.tenerife.es/portalcabtfe/es/">
-      <img src="/home/administrador/Imágenes/JBI-poster/folder/CabildodeTenerife-small.png" alt="cabildo">
-    </a>
-  </div>
-</div>
 -->
 
-<!--
 # ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
--->
 
 ## Table of Contents
 
