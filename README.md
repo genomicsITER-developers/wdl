@@ -1,6 +1,39 @@
 # WDL-based pipelines for whole genome and exome sequencing analysis
+<!--
+<p align="center">
+   <img src="/home/administrador/Imágenes/JBI-poster/folder/ULL-recortada-small.png"/>
+   <img src="/home/administrador/Imágenes/JBI-poster/folder/Taro-small.png"/>
+   <img src="/home/administrador/Imágenes/JBI-poster/folder/ITER-small.png"/>
+   <img src="/home/administrador/Imágenes/JBI-poster/folder/CabildodeTenerife-small.png"/>
+</p>
+-->
 
+<div class="row" style="clear:both; display:table;">
+  <div class="column" style="float:left; padding-right:15px;">
+    <a href="https://www.ull.es/">
+      <img src="/home/administrador/Imágenes/JBI-poster/folder/ULL-recortada-small.png" alt="ull">
+    </a>
+  </div>
+  <div class="column" style="float:left; padding-right:15px;">
+    <a href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/">
+      <img src="/home/administrador/Imágenes/JBI-poster/folder/Taro-small.png" alt="taro">
+    </a>
+  </div>
+  <div class="column" style="float:left; padding-right:15px;">
+    <a href="http://www.iter.es/">
+      <img src="/home/administrador/Imágenes/JBI-poster/folder/ITER-small.png" alt="iter">
+    </a>
+  </div>
+  <div class="column" style="float:left;">
+    <a href="http://www.tenerife.es/portalcabtfe/es/">
+      <img src="/home/administrador/Imágenes/JBI-poster/folder/CabildodeTenerife-small.png" alt="cabildo">
+    </a>
+  </div>
+</div>
+
+<!--
 # ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
+-->
 
 ## Table of Contents
 
@@ -74,7 +107,5 @@ Pipeline for whole exome and sequencing analysis.
 >Funded by Ministerio de Ciencia, Innovación y Universidades (RTC-2017-6471-1; MINECO/AEI/FEDER, UE). This work has been supported by the CEDeI program (Centro de Excelencia de Desarrollo e Innovación, Cabildo de Tenerife). The authors also thankfully acknowledge the computer resources and the technical support provided by TARO Research Group of the University of La Laguna.
 >
 >## ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-2.png?raw=true)
-
-
 
 For more information, see the following [poster](https://github.com/AdrianMBarrera/Presentations/raw/master/Poster_JBI_2018_WDL-based-pipelines-for-WGS-and-WES-analysis.pdf).
