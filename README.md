@@ -9,16 +9,16 @@
 -->
 
 <a target="_blank" rel="noopener noreferrer" href="https://www.ull.es/">
-<img src="/home/administrador/Imágenes/JBI-poster/folder/ULL-recortada-small.png" alt="ull" hspace="3"/>
+<img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png" alt="ull" hspace="3"/>
 </a>
 <a target="_blank" rel="noopener noreferrer" href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/">
-<img src="/home/administrador/Imágenes/JBI-poster/folder/Taro-small.png" alt="taro" hspace="5"/>
+<img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Taro-small.png" alt="taro" hspace="5"/>
 </a>
 <a target="_blank" rel="noopener noreferrer" href="http://www.iter.es/">
-<img src="/home/administrador/Imágenes/JBI-poster/folder/ITER-small.png" alt="iter" hspace="5"/>
+<img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ITER-small.png" alt="iter" hspace="5"/>
 </a>
 <a target="_blank" rel="noopener noreferrer" href="http://www.tenerife.es/portalcabtfe/es/">
-<img src="/home/administrador/Imágenes/JBI-poster/folder/CabildodeTenerife-small.png" alt="cabildo" hspace="3"/>
+<img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png" alt="cabildo" hspace="3"/>
 </a>
 
 <!--
