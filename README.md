@@ -8,28 +8,28 @@
 </p>
 -->
 
-<div class="row" style="clear:both; display:table;">
+<p align="center">
   <div class="column" style="float:left;">
-    <a href="https://www.ull.es/">
+    <a href="https://www.ull.es/" target="_blank">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png" alt="ull">
     </a>
   </div>
   <div class="column" style="float:left;">
-    <a href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/">
+    <a href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/" target="_blank">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Taro-small.png" alt="taro">
     </a>
   </div>
   <div class="column" style="float:left;">
-    <a href="http://www.iter.es/">
+    <a href="http://www.iter.es/" target="_blank">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ITER-small.png" alt="iter">
     </a>
   </div>
   <div class="column" style="float:left;">
-    <a href="http://www.tenerife.es/portalcabtfe/es/">
+    <a href="http://www.tenerife.es/portalcabtfe/es/" target="_blank">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png" alt="cabildo">
     </a>
   </div>
-</div>
+</p>
 
 <!--
 # ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
