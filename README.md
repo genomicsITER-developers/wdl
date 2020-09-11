@@ -2,7 +2,7 @@
 
 <!--
 <div class="row" style="clear:both; display:table;">
-   <a target="_blank" href="https://www.ull.es/" style="text-decoration:none;">
+   <!-- <a target="_blank" href="https://www.ull.es/" style="text-decoration:none;">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/ULL-recortada-small.png?raw=true" alt="ull" hspace="3"/>
    </a>
    <a target="_blank" rel="noopener noreferrer" href="https://www.ull.es/investigacion/grupos-investigacion/taro-ingenieria-del-software-y-bases-de-datos/" style="text-decoration:none;">
@@ -13,7 +13,7 @@
    </a>
    <a target="_blank" rel="noopener noreferrer" href="http://www.tenerife.es/portalcabtfe/es/" style="text-decoration:none;">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png?raw=true" alt="cabildo" hspace="3"/>
-   </a>
+   </a> -->
 </div>
 -->
 
