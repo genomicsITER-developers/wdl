@@ -13,7 +13,7 @@
    </a>
    <a target="_blank" rel="noopener noreferrer" href="http://www.tenerife.es/portalcabtfe/es/" style="text-decoration:none;">
       <img src="https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/CabildodeTenerife-small.png?raw=true" alt="cabildo" hspace="3"/>
-   </a> -->
+   </a> 
 </div>
 -->
 
