@@ -17,7 +17,9 @@
 </div>
 -->
 
+<!-- 
 # ![](https://github.com/AdrianMBarrera/Presentations/blob/master/JBI-2018-images/Logos-1.png?raw=true)
+-->
 
 ## Table of Contents
 
