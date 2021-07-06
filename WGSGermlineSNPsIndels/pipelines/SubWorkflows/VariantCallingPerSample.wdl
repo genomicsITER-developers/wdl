@@ -1,5 +1,5 @@
 #
-# WORKFLOW: Variant Calling
+# WORKFLOW: Variant Calling 
 # STEPS:
 # 1. MarkDuplicates --> MergeBamsPerSample
 # 2. BQSR (por intervalos --> TSVIntervalsFile)
