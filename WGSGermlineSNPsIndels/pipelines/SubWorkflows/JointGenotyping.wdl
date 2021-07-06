@@ -1,4 +1,4 @@
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/SetWorkingDirectory.wdl" as workDir 
 #import "SubWorkflows/VariantQualityScoreRecalibration.wdl" as VQSR
 
 workflow JointGenotypingWF {
