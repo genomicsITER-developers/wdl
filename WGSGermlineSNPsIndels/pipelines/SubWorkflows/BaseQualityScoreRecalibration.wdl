@@ -1,5 +1,5 @@
 # IMPORTS
-import "SubWorkflows/SetWorkingDirectory.wdl" as workDir
+import "SubWorkflows/SetWorkingDirectory.wdl" as workDir 
 
 workflow BaseQualityScoreRecalibrationWF {
 
