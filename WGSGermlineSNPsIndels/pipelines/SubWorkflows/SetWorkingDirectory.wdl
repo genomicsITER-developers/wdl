@@ -1,6 +1,6 @@
 #
 
-# ConfigureResultsDirectory
+# ConfigureResultsDirectory 
 task ConfigureResultsDirectory {
 
   String resultsDir
