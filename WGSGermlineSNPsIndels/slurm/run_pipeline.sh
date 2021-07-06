@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 #SBATCH -p long
 #SBATCH -N 1
 #SBATCH --tasks-per-node=16
