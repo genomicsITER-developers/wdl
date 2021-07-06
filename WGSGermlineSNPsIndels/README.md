@@ -1,4 +1,4 @@
-## Table of Contents
+## Table of Contents 
 
 * [Usage](#usage)
     * [Set input parameters](#set-input-parameters)
