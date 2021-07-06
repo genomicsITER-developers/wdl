@@ -1,5 +1,5 @@
 #
-# WORKFLOW: Preprocessing
+# WORKFLOW: Preprocessing 
 # STEPS:
 # 6. Quality Control (per-sample, per-lane)
 #
