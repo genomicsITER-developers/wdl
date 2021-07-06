@@ -1,5 +1,5 @@
 #
-# WORKFLOW: Variant Calling
+# WORKFLOW: Variant Calling 
 # STEPS:
 # ?. Quality Control (per-sample)
 #
