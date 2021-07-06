@@ -1,5 +1,5 @@
 #
-# WORKFLOW: WholeGenomeSequencingGATK4.wdl
+# WORKFLOW: WholeGenomeSequencingGATK4.wdl 
 #
 # Workflow:
 # A. Per sample, per lane
